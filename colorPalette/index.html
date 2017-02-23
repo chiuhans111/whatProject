@@ -13,6 +13,11 @@
     <p>use up down arrow key to generate different palette</p>
     <p>main support browser: CHROME</p>
     <canvas width="350" height="200"></canvas>
+    <br>
+    <button onmousedown="tt-=5;palette1(tt)">▲</button>
+    <button onmousedown="tt+=5;palette1(tt)">▼</button>
+    <input type="text" id="ttt">
+    <button onclick="tt=+document.querySelector('#ttt').value;palette1(tt)">input hue value</button>
     <h3>請按右鍵複製或儲存圖片</h3>
     <p>right click on the picture to copy or save</p>
     <h3><a href="https://github.com/chiuhans111/whatProject/blob/master/colorPalette/index.html"> GITHUB PAGE</a></h3>
@@ -27,6 +32,7 @@
     var tt = 20;
     palette1(tt);
     function palette1(tt) {
+        document.querySelector('#ttt').value = tt;
         palette(...[tt, tt + 30, tt + 180, tt + 210].map(x =>
             [
 
@@ -44,9 +50,9 @@
 
 
     addEventListener("keydown", function (event) {
-        if (event.code == "ArrowDown") tt++;
-        if (event.code == "ArrowUp") tt--;
-        palette1(tt);
+        if (event.code == "ArrowDown") palette1(++tt);
+        if (event.code == "ArrowUp") palette1(--tt);
+        
     })
     function palette() {
 
