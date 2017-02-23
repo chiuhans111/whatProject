@@ -4,17 +4,26 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+
 </head>
 
 <body>
-    <canvas width="300" height="300"></canvas>
+    <h3>使用上下鍵產生不同顏色的色板</h3>
+    <h3>主要支援瀏覽器：CHROME</h3>
+    <p>use up down arrow key to generate different palette</p>
+    <p>main support browser: CHROME</p>
+    <canvas width="350" height="200"></canvas>
+    <h3>請按右鍵複製或儲存圖片</h3>
+    <p>right click on the picture to copy or save</p>
+    <h3><a href="https://github.com/chiuhans111/whatProject/blob/master/colorPalette/index.html"> GITHUB PAGE</a></h3>
 </body>
 <script>
     var canvas = document.querySelector("canvas");
     var ctx = canvas.getContext("2d");
     var tt = 20;
+    palette1(tt);
     function palette1(tt) {
-        palette(...[tt, tt+30, tt + 180, tt + 210].map(x =>
+        palette(...[tt, tt + 30, tt + 180, tt + 210].map(x =>
             [
 
                 ...Array(7)
