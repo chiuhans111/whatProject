@@ -12,12 +12,21 @@
     <h3>主要支援瀏覽器：CHROME</h3>
     <p>use up down arrow key to generate different palette</p>
     <p>main support browser: CHROME</p>
+    <hr>
+    <input type="text" id="fff">
+    <button onclick="tt=Color(document.querySelector('#fff').value).h;palette1(tt)">input main hex color code</button>
+    <br>
     <canvas width="350" height="200"></canvas>
     <br>
     <button onmousedown="tt-=5;palette1(tt)">▲</button>
     <button onmousedown="tt+=5;palette1(tt)">▼</button>
+    
     <input type="text" id="ttt">
     <button onclick="tt=+document.querySelector('#ttt').value;palette1(tt)">input hue value</button>
+    <hr>
+    <p>你點擊的顏色為(the color code you click on is)：</p>
+    <input type="text" id="code">
+    <hr>
     <h3>請按右鍵複製或儲存圖片</h3>
     <p>right click on the picture to copy or save</p>
     <h3><a href="https://github.com/chiuhans111/whatProject/blob/master/colorPalette/index.html"> GITHUB PAGE</a></h3>
@@ -30,9 +39,20 @@
     var canvas = document.querySelector("canvas");
     var ctx = canvas.getContext("2d");
     var tt = 20;
+
+    canvas.onclick = function(event){
+        console.log(event);
+        var data = ctx.getImageData(event.layerX, event.layerY, 1, 1).data;
+        var color = Color(data[0], data[1], data[2]);
+        document.querySelector('#code').value = color.code;
+    }
     palette1(tt);
     function palette1(tt) {
         document.querySelector('#ttt').value = tt;
+        var c = Color();
+        c.h = tt;
+        c.s = c.v = 1;
+        document.querySelector('#fff').value = c.code;
         palette(...[tt, tt + 30, tt + 180, tt + 210].map(x =>
             [
 
@@ -42,7 +62,7 @@
                 var c = Color();
                 var d = i / a.length * 360 + 20;
                 c.h = h + d;
-                c.s = 1 - (Math.min(d, 360 - d)) / 200;
+                c.s = 1 - (Math.min(d, 360 - d)) / 220;
                 c.v = 1 - (Math.min(d, 360 - d)) / 210;
                 return c;
             })));
