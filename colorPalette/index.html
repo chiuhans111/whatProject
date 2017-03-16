@@ -56,22 +56,26 @@
                          palette(...[
                              tt,
                              tt + 30,
+                             tt + 60,
                              tt + 180,
                              tt + 210,
+                             tt + 240,
                          ].map(x =>
                              [
-                                 ...Array(4)
+                                 ...Array(5)
                              ].map(y => x).map((h, i, a) => {
                                  var c = Color();
-                                 c.h = h + i * 90 / a.length - 45;
+                                 c.h = h + i * 30 / a.length;
                                  var d = (c.h - tt) % 360;
                                  while (d < 0) d += 360;
                                  c.s = 1;
                                  c.v = 1;
+                                 c.v =
+                                     (1- ( 1-c.brightness / 255*0.2)+0.8) *
+                                     (1 - Math.sin(Math.min(d, 360 - d) / 500 * Math.PI / 2));
                                  c.s = 1 - Math.sin(Math.min(d, 360 - d) / 360 * Math.PI / 2);
-                                 c.v = (1-(1-c.brightness / 255 * 0.65)+0.35) * (1 - Math.abs(i / a.length - 0.5) * 0.9);
-                         return c;
-                     })));
+                                 return c;
+                             })));
                      }
 
 
