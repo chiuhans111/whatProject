@@ -1,3 +1,10 @@
+/*
+code for bookmark
+
+javascript:var a=document.createElement('script');a.src='https://rawgit.com/chiuhans111/whatProject/master/bahaAnimeAutoNext/AutoNext.js';document.body.appendChild(a)
+
+*/
+
 function hacker(target) {
     var infospan = document.createElement('span');
 
