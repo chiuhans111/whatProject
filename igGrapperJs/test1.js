@@ -90,25 +90,37 @@ function grapCurrent(callback) {
         if (likeSpan != null) likes = +likeSpan.textContent;
         else likes = section.querySelectorAll('div > a').length;
         var timeElement = section.querySelector('time');
-        var time = {
+        var time = 'unknown';
+        if (timeElement != null) time = {
             code: timeElement.getAttribute('datetime'),
             title: timeElement.title,
             text: timeElement.textContent
         }
         // comment
-        var comments = Array.from(article.querySelectorAll('ul > li')).map(li => {
-            var userLink = li.querySelector('a');
-            var userHref = userLink.href;
-            var user = {
-                id: userHref.split('/').filter(s => s.length).pop(),
-                link: userHref,
+        Array.from(article.querySelectorAll('ul > li')).map(li => {
+            var button = li.querySelector('button');
+            if (button != null) {
+                button.click();
+                throw new Error('button not clicked');
             }
-            var content = li.querySelector('span').textContent;
-            return {
-                user: user,
-                content: content
-            }
-        });
+        })
+
+        var comments = Array.from(article.querySelectorAll('ul > li'))
+            .filter(li => li.querySelector('a') != null)
+            .map(li => {
+                var userLink = li.querySelector('a');
+                var userHref = userLink.href;
+                var user = {
+                    id: userHref.split('/').filter(s => s.length).pop(),
+                    link: userHref,
+                }
+                var content = li.querySelector('span').textContent;
+                return {
+                    user: user,
+                    content: content
+                }
+            });
+
         // content
         var imgElement = header.nextSibling.querySelector('img');
         if (imgElement == null) imgElement = header.nextSibling.querySelector('video');
