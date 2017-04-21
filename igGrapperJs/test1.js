@@ -1,8 +1,7 @@
 // setup
 
-var loadDelay = 100;
-var retryDelay = 250;
-
+var loadDelay = 1500;
+var retryDelay = 500;
 
 var page = window.open('');
 
@@ -22,6 +21,8 @@ function dom(tag, mod, parent, callback) {
     if (callback instanceof Function) callback(element);
     return element;
 }
+
+dom('script', { src: 'https://rawgit.com/exif-js/exif-js/master/exif.js' }, document.head);
 // page
 
 page.dom = dom.bind(page);
@@ -38,12 +39,12 @@ if (document.querySelectorAll('article').length < 2) firstPic.click();
 var count = 50;
 var all = [];
 
-grap();
+//grap();
 
 function grap() {
     grapCurrent(function (data, article) {
         all.push(data);
-        article.querySelector('header').nextSibling.appendChild(dom('done'))
+        //article.querySelector('header').nextSibling.appendChild(dom('done'))
         count--;
         document.querySelector('.coreSpriteRightPaginationArrow').click();
 
@@ -62,12 +63,15 @@ function grap() {
     });
 }
 
-
+var hashtable = {};
 function grapCurrent(callback) {
     try {
 
         var article = document.querySelectorAll('article')[1];
-        if (article.querySelector('done') != null) throw new Error('repeat');
+        /*
+        if (article.querySelector('done') != null) {
+            throw new Error('repeat');
+        }*/
         // title
         var header = article.querySelector('header');
         var authorLink = header.querySelector('a');
@@ -140,7 +144,11 @@ function grapCurrent(callback) {
             comments: comments,
             img: img
         };
-
+        var json = JSON.stringify(data);
+        if (hashtable[json]) {
+            throw new Error('repeated');
+        }
+        hashtable[json] = true;
         callback(data, article);
     } catch (e) {
         console.error(e);
