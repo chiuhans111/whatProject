@@ -1,6 +1,6 @@
 // usage: http://www.liveany.com/web.html
+document.querySelector('#base').remove();
 
-document.body.innerHTML = "";
 var agent = new Agent();
 function createAgent(callback) {
     var agent = new Agent();
@@ -11,6 +11,7 @@ function createAgent(callback) {
 
     agent.connect(f.contentWindow, function (agent) {
         callback({
+            f: f,
             agent: agent,
             close: function () {
                 agent.disconnect();
@@ -21,70 +22,94 @@ function createAgent(callback) {
     });
 }
 
+// multi chat
+var chatLimit = 2;
+var packs = [];
+var blockedMessages = [
+    '主人的小m貓在哪裡?',
+    '找色女',
+    '高雄男尋找炮友~',
+    '我是女生婷婷 我在等你交友加我賴的信息 ID：yu899',
+    '找色女~ 圖愛 電愛 (不露臉)',
+    '蔡英文豬鼻小英'
+];
+
+
+var blockedPattern = [
+    includePattern('我在等你交友加我賴的信息'),
+    includePattern('妹子加我微信聊天'),
+    includePattern('http'),
+];
+
+var preprossing = [
+
+];
+
+function includePattern(pat) { return function (m) { return m.includes(pat) } }
+
 function translate(message) {
-    return Array.from(message).map(a => {
+    return Array.from(message).map(c => {
         var map = {
             '男': '女',
             '女': '男',
             '妳': '你',
-            '叔': '姐',
-            '哥': '妹',
-            '妹': '哥',
+            '哥': '姐',
             '姐': '哥',
-            '姊': '哥',
-            '弟': '姐'
+            '弟': '妹',
+            '妹': '弟',
+            '叔': '姨',
+            '爺': '娘'
         }
-        return map[a] || a;
+        return map[c] || c;
     }).join('');
 }
 
 
-var fullLog = [];
-function startTransferTalk() {
-    var log = [];
-    var a1, a2, p1, p2;
-    createAgent(function (pack) {
-        var agent = pack.agent;
-        a1 = agent;
-        p1 = pack;
-        check();
-    });
-    createAgent(function (pack) {
-        var agent = pack.agent;
-        a2 = agent;
-        p2 = pack;
-        check();
-    });
-    function check() {
-        if (a1 && a2) {
-            console.log('connection begin');
-            a1.on('packetsafe', function (packet) {
-                a2.send(translate(packet.message));
-                log.push("A:" + packet.message);
-            });
-            a1.on('readyState', function (agent) {
-                if (agent.readyState == 'leave') reset();
-            });
-            a2.on('packetsafe', function (packet) {
-                a1.send(translate(packet.message));
-                log.push("B:" + packet.message);
-            });
-            a2.on('readyState', function (agent) {
-                if (agent.readyState == 'leave') reset();
-            });
-        }
-    }
-    function reset() {
-        fullLog.push(log);
-        p1.close();
-        p2.close();
-        setTimeout(function () {
-            startTransferTalk()
-        }, 500);
-    }
+var serverId = 'user5487';
+function brod(message) {
+
+    var translated = message;
+    var message = '[多人聊天 ' + serverId + '] : ' + translated;
+    translated = translate(translated);
+    var message2 = '[多人聊天 ' + serverId + '] : ' + translated;
+    packs.map(p => p.agent.send((p.agent.wow) ? message2 : message));
 }
 
+function qagent(id) {
+    return packs.filter(p => p.agent.id == id)[0].agent
+}
 
+function update() {
+    if (packs.length < chatLimit) {
+        createAgent(function (pack) {
+            packs.push(pack);
+
+            if (Math.random() < 0.8) pack.agent.wow = true;
+
+            pack.agent.on('packetsafe', function (packet) {
+                var translated = packet.message;
+                var message = '[多人聊天 user' + pack.agent.id + '] : ' + translated;
+                translated = translate(translated);
+                var message2 = '[多人聊天 user' + pack.agent.id + '] : ' + translated;
+                console.log((pack.agent.wow) ? ('w ' + message2) : message);
+                packs.filter(p => p != pack).map(p => p.agent.send((p.agent.wow ^ pack.agent.wow) ? message2 : message));
+            });
+
+            pack.agent.on('readyState', function (agent) {
+                if (agent.readyState == 'leave') {
+                    pack.close();
+                    pack.delete = true;
+                }
+            });
+        });
+    }
+    packs.map(p => { if (p.f.contentWindow == null) p.delete = true });
+    packs = packs.filter(p => !p.delete);
+}
+
+multi = setInterval(update, 500);
+
+// end multi chat
 
 var idCounter = 0;
 function Agent() {
@@ -141,11 +166,6 @@ function Agent() {
                         message: node.childNodes[0].textContent,
                         device: node.childNodes[1].childNodes[0].textContent
                     });
-                    if (agent.meetAgent === false)
-                        agent.eventport.emit('packetsafe', {
-                            message: node.childNodes[0].textContent,
-                            device: node.childNodes[1].childNodes[0].textContent
-                        });
                 }
                 break;
         }
@@ -178,55 +198,21 @@ function Agent() {
 
 
         // varify
-        var needToVarify = true;
-        var token = null;
-        var successTime = 0;
-        var wrongTime = 0;
+
         agent.on('readyState', function () {
             if (agent.readyState != 'started') return;
-            agent.send('hi hi HI');
-            token = 'yo';
+            agent.send('[多人聊天 server] h i ~ 你的id:' + agent.id);
         });
-        var pattern = {
-            'hi hi HI': 'yo',
-            'yo': '我今天好累喔',
-            '我今天好累喔': '真的嗎',
-            '真的嗎': '一直當機',
-            '一直當機': '那當然 你是機器人',
-            '那當然 你是機器人': '你也是',
-            '你也是': '掰掰 別當機了'
-        }
-        //var wid = setInterval(function () { wrongTime++ }, 500);
-        agent.on('packet', function (packet) {
-            if (needToVarify) {
-                if (token) {
-                    if (token == packet.message) {
-                        agent.meetAgent = true;
-                        successTime++;
-                        token = null;
-                    } else wrongTime++;
-                }
-                if (pattern[packet.message]) {
-                    setTimeout(function () {
-                        var reply = pattern[packet.message];
-                        token = pattern[reply];
-                        agent.send(reply);
-                    }, randomI(1000, 2000));
-                }
-                if (successTime > 4 || packet.message == '掰掰 別當機了') {
-                    needToVarify = false;
-                    agent.meetAgent = true;
-                    agent.eventport.emit('varified');
-                    //clearInterval(wid);
-                    setReadyState('leave');
-                    agent.disconnect();
 
-                }
-                if (wrongTime > 10) {
-                    agent.meetAgent = false;
-                    agent.eventport.emit('varified');
-                    //clearInterval(wid);
-                }
+
+        agent.on('packet', function (packet) {
+            if (packet.message.includes('[多人聊天 ') ||
+                blockedMessages.includes(packet.message) ||
+                blockedPattern.filter(bp => bp(packet.message)).length > 0) {
+                setReadyState('leave');
+                return;
+            } else {
+                agent.eventport.emit('packetsafe', packet);
             }
         });
         callback(agent);
@@ -240,7 +226,6 @@ function Agent() {
     }
 
     this.connect = function (window, callback) {
-        console.log('tryToConnect');
         if (!window.document) {
             agent.disconnect();
             setTimeout(function () {
