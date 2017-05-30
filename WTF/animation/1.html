@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<style>
+    pre {
+        position: fixed;
+        top: 10%;
+        left: 10%;
+        font-size: 32px;
+        font-family: consolas;
+    }
+
+    body {}
+</style>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <pre></pre>
+</body>
+
+<script>
+    var clip = [];
+    function time(f, t) {
+        while (t--) f();
+    }
+
+    time(_ => clip.push('/<_\\   ˊ_>ˋ'), 20);
+    time(_ => clip.push('/<_\\   ˊ<_ˋ'), 10);
+    time(_ => clip.push('/<_\\   ˊ_>ˋ'), 20);
+    time(_ => clip.push('/<_\\   ˊ<_ˋ'), 5);
+    time(_ => clip.push('/<_\\   ˊ_>ˋ'), 10);
+    time(_ => clip.push('/<_\\   ˊ<_ˋ'), 5);
+    time(_ => clip.push('/_>\\   ˊ<_ˋ'), 3);
+    time(_ => clip.push('/_>\\   ˊ_>ˋ'), 2);
+    time(_ => clip.push('/_>\\   ﾟ дﾟ'), 7);
+    time(_ => clip.push('ﾟ_>ﾟ      =ﾟ дﾟ'), 2);
+    time(_ => clip.push('ﾟ_>ﾟ        ﾟ дﾟ'), 5);
+    time(_ => clip.push('/_>\\        ﾟ<_ﾟ'), 3);
+    time(_ => clip.push('ˊ_>ˋ        ﾟ<_ﾟ'), 5);
+    clip.push('ˊ_>ˋ-       ﾟ<_ﾟ');
+    time(_ => clip.push('ˊ_>ˋ-o      ﾟ<_ﾟ'), 5);
+    clip.push('ˊ_>ˋ-o      ﾟ<_ﾟ');
+    clip.push('ˊ_>ˋ--o     ﾟ<_ﾟ');
+    clip.push('ˊ_>ˋ---o    ﾟ<_ﾟ');
+    clip.push('ˊ_>ˋ----o    ﾟ<_ﾟ');
+    clip.push('ˊ_>ˋ-----o    ﾟ<_ﾟ');
+    time(_ => clip.push('ˊ_>ˋ------o    ﾟ<_ﾟ'), 5);
+    time(_ => clip.push('ˋ_>ˊ------c    ﾟﾛ ﾟ'), 5);
+    clip.push('ˋ_>ˊ------c    ﾟﾛ ﾟ');
+    clip.push('ˋ_>ˊ-------c    ﾟﾛ ﾟ');
+    clip.push('ˋ_>ˊ--------c    ﾟﾛ ﾟ');
+    clip.push('ˋ_>ˊ---------c    ﾟﾛ ﾟ');
+    clip.push('ˋ_>ˊ----------c    ﾟﾛ ﾟ');
+    time(_ => clip.push('ˋ_>ˊ----------c    ﾟ<_ ﾟ'), 5);
+    time(_ => clip.push('ˋ_>ˊ----------o    ﾟ<_ ﾟ'), 2);
+    time(_ => clip.push('ˋ_>ˊ----------c    ﾟ<_ ﾟ'), 2);
+    time(_ => clip.push('ˋ_>ˊ----------o    ﾟ<_ ﾟ'), 2);
+    clip.push('ˋ_>ˊ-----------==c ﾟ<_ ﾟ');
+    time(_ => clip.push('ˋ_>ˊ---------------ﾟﾛ  ﾟ'), 2);
+    clip.push('ˋ_>ˊ--------------ﾟﾛ  ﾟ')
+    clip.push('ˋ_>ˊ-------------ﾟﾛ  ﾟ')
+    clip.push('ˋ_>ˊ-----------ﾟﾛ  ﾟ')
+    clip.push('ˋ_>ˊ-------ﾟﾛ  ﾟ')
+    clip.push('ˋ_>ˊ---ﾟﾛ  ﾟ')
+    clip.push('ˋ_>ˊ--ﾟﾛ  ﾟ')
+    clip.push('ˋ_>ˊ- ﾟﾛ  ﾟ')
+    time(_ => clip.push('ˋ_>ˊ   ˊ<_ˋ'), 10);
+    time(_ => clip.push('ˊ_>ˋ   ˊ_>ˋ'), 10);
+    time(_ => clip.push('/_>\\   ˊ_>ˋ'), 10);
+    var element = document.querySelector('pre');
+    var player = new Player(clip);
+
+    setInterval(function () {
+        player.updateframe(function (context) {
+            element.textContent = context;
+        });
+    }, 100);
+
+    player.play();
+
+    function Player(clip) {
+        var player = this;
+        this.clip = clip;
+        this.position = 0;
+        this.playing = false;
+        this.loop = true;
+        this.play = function () {
+            player.playing = true;
+        }
+        this.stop = function () {
+            player.playing = true;
+            player.position = 0;
+        }
+        this.pause = function () {
+            player.playing = false;
+        }
+
+        this.updateframe = function (callback) {
+            var context = player.playing ? 'playing' : 'stopped';
+            context+='\r\n';
+            var leng = 20;
+            var perc = player.position * leng / clip.length;
+            perc = Math.round(perc);
+            time(_ => context += '+', perc);
+            time(_ => context += '-', leng - perc);
+            context += '\r\n\r\n';
+            context += player.clip[player.position];
+            callback(context);
+            if (player.playing) {
+                player.position++;
+                if (player.position >= player.clip.length) {
+                    player.stop();
+                    if (player.loop) player.play();
+                }
+            }
+        }
+    };
+
+</script>
+
+</html>
