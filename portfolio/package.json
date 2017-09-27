@@ -1,0 +1,15 @@
+{
+  "name": "dalib_game",
+  "version": "1.0.0",
+  "description": "daan library game",
+  "main": "app.js",
+  "dependencies": {},
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open ",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+  },
+  "author": "chiuhans111",
+  "license": "ISC"
+}

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>HansChiu | 火柴</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="/favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+    <meta name="theme-color" content="#000000">
+
+</head>
+<style>
+    .nb {
+        margin-bottom: 0px;
+    }
+
+    .time {
+        color: gray;
+        margin-top: 0px;
+    }
+
+    .clear {
+        clear: left;
+    }
+
+    .medal {
+        float: left;
+        font-size: 0.8em;
+        padding: 4px;
+        margin: 2px;
+        color: grey;
+        border-radius: 100px;
+        background-color: white;
+    }
+
+    body {
+        font-family: sans-serif;
+        background-color: #f1f1f1;
+        margin: 0;
+        padding: 0;
+    }
+
+    .all {
+        width: 1280px;
+        max-width: 100%;
+        margin: auto;
+    }
+
+    .header {
+        background-color: #242424;
+        height: 64px;
+        width: 100%;
+    }
+
+    .footer {
+        color: white;
+        clear: left;
+        width: 100%;
+        height: 192px;
+        background-color: #242424;
+    }
+
+    .block {
+        position: relative;
+        width: 400px;
+        height: 300px;
+        margin: 4px;
+        overflow: hidden;
+    }
+
+    .float {
+        float: left;
+    }
+
+    .imagecrop {
+        width: 400px;
+        height: 192px;
+        overflow: hidden;
+    }
+
+    .page {
+        padding-top: 64px;
+        width: 896px;
+        max-width: 80%;
+        padding: 16px;
+    }
+
+    .side {
+        width: 192px;
+        margin: 32px;
+        padding: 32px;
+        background-color: white;
+        transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .button:hover .invh {
+        color: white;
+        background-color: black;
+    }
+
+    .invh2:hover {
+        filter: invert(1);
+        transition: all 0.2s;
+    }
+
+    .grayh {
+        filter: brightness(0.8);
+        transition: all 0.2s;
+    }
+
+    .button:hover .grayh {
+        filter: brightness(1);
+        transition: all 0.1s;
+    }
+
+    .corner {
+        position: absolute;
+        right: 0px;
+        bottom: 0px;
+    }
+
+    h5 {
+        color: gray;
+    }
+
+    @media (max-width:1280px) {
+        .side h5 {
+            float: left;
+            margin-right: 16px;
+        }
+
+        .side {
+            width: 100%;
+            margin: 0px 0px 16px;
+            padding: 0px;
+            transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+        }
+        .smhide {
+            display: none;
+        }
+        .page {
+            position: relative;
+            padding: 0px;
+            width: 100%;
+            max-width: 810px;
+            margin: auto;
+            left: 50%;
+            transform: translate(-50%, 0);
+        }
+        .block {
+            max-width: 400px;
+            width: 50%;
+            margin: 0px;
+        }
+        .smfloat {
+            float: left;
+            padding: 16px;
+        }
+    }
+
+    .wrapm {
+        margin: 32px;
+    }
+
+    @media (max-width:500px) {
+        .page {
+            margin: 0px;
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+        }
+        .block {
+            width: 100%;
+        }
+        .imagecrop {
+            widows: 100%;
+        }
+    }
+
+    @media (min-width: 1900px) {
+        .all {
+            width: 1900px;
+        }
+        .page {
+            width: 1230px;
+            transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+        }
+        .side {
+            width: 400px;
+            transition: all 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+        }
+    }
+</style>
+
+<body>
+    <div id="app">
+
+        <a name="top"></a>
+        <div class="all">
+
+
+            <div class="float side">
+                <div class="smfloat">
+                    <a href="https://www.behance.net/chiuhans11613a">
+                        <img class="invh2" src="/chai1.png" width="168px" alt="柴">
+                    </a>
+                </div>
+                <div class="smfloat">
+                    <br>
+                    <h4>Hans Chiu | 火柴</h4>
+                    <p>
+                        藝術家兼程式設計師，主要擅長平面設計與動畫。
+                    </p>
+                    <p>
+                        Art, Programming, Graphics Design, Animations.
+                    </p>
+                    <br>
+                    <hr>
+                    <br>
+                    <div class="smhide">
+                        <h4>PROJECTS | 作品</h4>
+
+                        <template v-for="project in projects">
+                            <h5 class="button">
+                                <a class="invh" :href="project.url">
+                                    {{project.name}}
+                                </a>
+                            </h5>
+
+
+                        </template>
+                        <br>
+                        <hr>
+
+                    </div>
+                </div>
+                <div class="smfloat">
+                    <br>
+                    <h4>CONTACT | 聯絡我</h4>
+
+                    <template v-for="contact in info.social_links">
+                        <h5 class="button">
+                            <a class="invh" :href="contact.url">
+                                {{contact.service_name}}
+                            </a>
+                        </h5>
+                    </template>
+                    <template class="invh" v-for="contact in info.links">
+                        <h5 class="button">
+                            <a class="invh" :href="contact.url">
+                                {{contact.title}}
+                            </a>
+                        </h5>
+                    </template>
+                </div>
+            </div>
+            <div class="float page">
+                <template v-for="project in projects">
+                    <a :href="project.url">
+                        <div class="float block button">
+
+                            <div class="imagecrop">
+                                <img class="grayh" :src="project.covers[404]" width="400px" alt="cover">
+                            </div>
+
+                            <h3 class="nb invh">{{project.name}}</h3>
+                            <h5 class="time nb">{{new Date(project.created_on).toLocaleDateString()}}</h5>
+                            <span class="medal" v-for="field in project.fields">{{field}}</span>
+
+                        </div>
+                    </a>
+                </template>
+            </div>
+            <div class="clear wrapm">
+                <br>
+                <a href="#top">Back to top</a>
+                <hr>
+
+            </div>
+        </div>
+        <div class="footer">
+
+            <div class="float wrapm">
+
+                <h5 class="nb">Web Designer</h5>
+                <h4>Hans Chiu</h4>
+            </div>
+            <div class="float wrapm">
+                <h5 class="nb">Portfolio</h5>
+                <br>
+                <a href="https://www.behance.net/">
+                    <img src="./PbyBehance-vertical-145px.png" style="backgroundColor:black" alt="power by behance">
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="./main.js"></script>
+
+</html>
