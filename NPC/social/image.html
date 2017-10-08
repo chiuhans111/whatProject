@@ -53,8 +53,11 @@
     }
 
     img {
+        position: relative;
+        top: 0px;
         margin: 4px;
     }
+
 
     input {
         padding: 4px;
@@ -97,6 +100,14 @@
             </div>
             <br>
 
+
+            <p>1. 圖片位置 <button onclick="deleteImg()">移除圖片</button>
+                <input type="text" id="pos" value="0.5" size="30">
+                <br><small class="right">0~1 (0.5表示置中)</small>
+            </p>
+
+
+
             <div class="bigbold" style="border-color:#03A9F4" onclick="globalDraw()">
                 <div class="center">
                     <h3 class="nm">點我做圖</h3>
@@ -109,19 +120,26 @@
         </div>
 
         <div class="float">
+
             <br>
             <h2>設定</h2>
             <hr>
-            <p>1. 圖片位置
-                <input type="text" id="pos" value="0.5" size="50">
-                <br><small class="right">0~1 (0.5表示置中)</small>
-            </p>
             <p>2. 圖片特效
                 <input type="text" id="filter" value="blur(10px) contrast(1.2) brightness(0.9)" size="50">
                 <br><small class="right">使用css filter 用空白分隔</small>
             </p>
-            <p>3. 顯示文字
-                <input type="text" id="text" value="課程通知,索票預告,明晚八點" size="50">
+            <p>3. 顯示文字<br>
+                <textarea id="text" cols="50" rows="5" style="max-width:500px">
+N
+TU
+TPR
+OGRA
+MMING,
+索票預告,
+北
+科大
+程式設
+計研究社</textarea>
                 <br><small class="right">以逗號分隔，每組四字為主</small>
             </p>
             <p>4. 切圖數量
@@ -154,6 +172,9 @@
             <em>Please disable Adblock!</em>
         </div>
         <br>
+
+
+
     </div>
 </body>
 <script>
@@ -171,6 +192,13 @@
     var imgchanged = false;
     var globalImg = null;
     var bgImg = null;
+
+    function deleteImg() {
+        globalImg = null;
+        bgImg = null;
+        imgchanged = true;
+        globalDraw();
+    }
 
 
     var imginput = document.getElementById('imginput');
@@ -242,7 +270,8 @@
     }
 
     function globalDraw() {
-        draw(globalImg, posinput.value, filterinput.value, textinput.value.split(','), countinput.value, color, bgcolor)
+        draw(globalImg, posinput.value, filterinput.value,
+            textinput.value.split(','), countinput.value, color, bgcolor)
 
     }
 
@@ -319,7 +348,7 @@
         allimg.src = bgImg.src
 
         allimg.onload = function () {
-            var size = 180;
+            var size = 150;
             var off = (300 - size) / 2;
 
             pool.innerHTML = '';
@@ -344,12 +373,26 @@
                     ctx2.fillRect(off - 2, off - 2, size + 4, size + 4);
                     ctx2.restore();
 
-                    var t = text[i % text.length];
-                    var w = Math.ceil(Math.sqrt(t.length));
-                    var h = Math.ceil(t.length / w);
-                    var margin = 10;
+                    var t = text[i % text.length].trim();
 
-                    var ts = Math.round((size - (w + 1) * margin) / w);
+                    var w = 1;
+                    var h = 1;
+
+                    var lines = t.split('\n');
+                    if (lines.length > 1) {
+                        lines.map(l => w = Math.max(w, l.length));
+                        h = lines.length;
+                        t = lines.map(l => l.padEnd(w)).join('');
+                    } else {
+                        w = Math.ceil(Math.sqrt(t.length));
+                        h = Math.ceil(t.length / w);
+                    }
+
+
+
+                    var margin = 8;
+                    var ml = Math.max(w, h);
+                    var ts = Math.round((size - (ml + 1) * margin) / ml);
 
                     ctx2.save();
                     ctx2.font = ts + "px 微軟正黑體";
@@ -359,20 +402,20 @@
 
                     var dx = ts + margin;
                     var dy = ts + margin;
-                    var ox = off + ts / 2 + margin;
-                    var oy = (size - dy * h + margin) / 2 + off + margin / 2 + ts / 2;
+                    var ox = (size - ts * w - margin * (w + 1)) / 2 + off + margin + ts / 2;
+                    var oy = (size - ts * h - margin * (h + 1)) / 2 + off + margin + ts / 2;
 
                     [...t].map((c, j) => {
                         var x = j % w;
                         var y = Math.floor(j / w);
-                        ctx2.fillText(c, x * dx + ox, y * dy + oy)
+                        ctx2.fillText(c, x * dx + ox, y * dy + oy + ts / 16)
                     })
                     ctx2.restore();
 
                     ctx2.save();
                     ctx2.strokeStyle = color;
-                    ctx2.lineWidth = 5;
-                    ctx2.strokeRect(60, 60, 180, 180);
+                    ctx2.lineWidth = 3;
+                    ctx2.strokeRect(off, off, size, size);
                     ctx2.restore();
 
 
