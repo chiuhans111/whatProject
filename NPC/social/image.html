@@ -202,6 +202,24 @@ MMING,
     var globalImg = null;
     var bgImg = null;
 
+
+    // PASTE
+    document.onpaste = function (event) {
+        var items = (event.clipboardData).items;
+        console.log(event.clipboardData); // will give you the mime types
+        for (index in items) {
+            var item = items[index];
+            if (item.kind === 'file') {
+                var blob = item.getAsFile();
+                var image = new Image();
+                image.src = URL.createObjectURL(blob);
+                globalImg = image;
+                imgchanged = true;
+                image.onload = globalDraw;
+            }
+        }
+    }
+
     function deleteImg() {
         globalImg = null;
         bgImg = null;
