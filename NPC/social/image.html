@@ -291,7 +291,8 @@
         allimg.src = bgImg.src;
 
         allimg.onload = function () {
-
+            var size = 180;
+            var off = (300 - size) / 2;
 
             pool.innerHTML = '';
             for (var i = 0; i < count; i++) {
@@ -312,18 +313,31 @@
                     ctx2.save();
                     ctx2.fillStyle = dark ? 'white' : 'black';
                     ctx2.globalAlpha = 0.2;
-                    ctx2.fillRect(60, 60, 180, 180);
+                    ctx2.fillRect(off, off, size, size);
                     ctx2.restore();
 
+                    var t = text[i % text.length];
+                    var w = Math.ceil(Math.sqrt(t.length));
+                    var h = Math.ceil(t.length / w);
+                    var margin = 10;
+
+                    var ts = Math.round((size - (w + 1) * margin) / w);
+
                     ctx2.save();
-                    ctx2.font = "72px 微軟正黑體";
+                    ctx2.font = ts + "px 微軟正黑體";
                     ctx2.fillStyle = dark ? 'black' : 'white';
                     ctx2.textAlign = 'center';
-                    var t = text[i % text.length];
+                    ctx2.textBaseline = 'middle';
+
+                    var dx = ts + margin;
+                    var dy = ts + margin;
+                    var ox = off + ts / 2 + margin;
+                    var oy = (size - dy * h + margin) / 2 + off + margin / 2 + ts / 2;
+
                     [...t].map((c, j) => {
-                        var x = j % 2;
-                        var y = Math.floor(j / 2);
-                        ctx2.fillText(c, x * 80 + 70 + 36, y * 80 + 70 + 70)
+                        var x = j % w;
+                        var y = Math.floor(j / w);
+                        ctx2.fillText(c, x * dx + ox, y * dy + oy)
                     })
                     ctx2.restore();
 
