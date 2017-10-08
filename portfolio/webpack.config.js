@@ -9,6 +9,7 @@ var publicFolder = path.resolve(__dirname, './dist');
 console.log('webpack target in:', entryFolder, 'out:', outputFolder);
 var targets = fs.readdirSync(entryFolder).filter(x => x.match(/\.js$/));
 console.log('found:', targets.join(','));
+
 var entry = {};
 for (var file of targets) entry[file] = entryFolder + file;
 console.log(entry);
@@ -70,7 +71,7 @@ module.exports = {
     performance: {
         hints: false
     },
-    devtool: '#eval-source-map'
+    devtool: 'eval-source-map'
 }
 
 if (process.env.NODE_ENV === 'production') {
@@ -83,7 +84,8 @@ if (process.env.NODE_ENV === 'production') {
             }
         }),
         new webpack.optimize.UglifyJsPlugin({
-            sourceMap: false
+            sourceMap: true,
+
         }),
         new webpack.LoaderOptionsPlugin({
             minimize: true

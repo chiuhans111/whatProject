@@ -6,7 +6,7 @@ function createAgent(callback) {
     var agent = new Agent();
     var f = document.createElement('iframe');
     f.height = 500;
-    f.src = 'http://www.liveany.com/web.html';
+    f.src = 'https://www.liveany.com/web.html';
     document.body.appendChild(f);
 
     agent.connect(f.contentWindow, function (agent) {

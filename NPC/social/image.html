@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="../favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon/favicon-16x16.png">
+    <link rel="manifest" href="../favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<style>
+    #imginput {
+        width: 300px;
+        height: 100px;
+        border-radius: 50px;
+        background-color: grey;
+    }
+
+    .center {
+        color: white;
+        width: -webkit-fit-content;
+        width: -moz-fit-content;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .float {
+        float: left;
+        margin: 16px;
+    }
+
+    .clear {
+        clear: left;
+    }
+
+    img {
+        margin: 4px;
+    }
+
+    input {
+        padding: 4px;
+    }
+
+    body {
+        font-size: 18px;
+        font-family: 微軟正黑體, sans-serif;
+        max-width: 1024px;
+        margin: auto;
+    }
+</style>
+
+<body>
+    <div class="float">
+        <h1>NPC 製圖工具</h1>
+        <h2>v0.54.87</h2>
+        <div id="imginput">
+            <div class="center">
+                0. 將背景圖片拖曳至此
+            </div>
+        </div>
+        或是 <input type="file" id="file">
+    </div>
+
+    <div class="float">
+        <br>
+        <hr>
+        <p>1. 圖片位置
+            <input type="text" id="pos" value="0.5" size="50">
+            <br><small>0~1 (0.5表示置中)</small>
+        </p>
+        <p>2. 圖片特效
+            <input type="text" id="filter" value="blur(10px) contrast(1.2) brightness(0.9)" size="50">
+            <br><small>0~1 (0.5表示置中)</small>
+        </p>
+        <p>3. 顯示文字
+            <input type="text" id="text" value="課程通知,索票預告,明晚八點" size="50">
+            <br><small>0~1 (0.5表示置中)</small>
+        </p>
+        <p>4. 切圖數量
+            <input type="text" id="count" value="3" size="50">
+            <br><small>0~1 (0.5表示置中)</small>
+        </p>
+        <p>5. 黑色字體
+            <input type="checkbox" id="dark">
+            <br><small>0~1 (0.5表示置中)</small>
+        </p>
+    </div>
+
+    <div class="clear"></div>
+    <p>6. 複製或另存</p>
+    <div id="pool">
+
+    </div>
+    <hr>
+    <h5>北科程式設計研究社 - 美術組</h5>
+</body>
+<script>
+    /* events fired on the draggable target */
+    var inputfile = document.getElementById('file');
+    inputfile.onchange = function (event) {
+        var image = new Image();
+        console.log(inputfile.files)
+        image.src = URL.createObjectURL(inputfile.files[0]);
+        globalImg = image;
+        image.onload = globalDraw;
+    }
+
+
+    var globalImg = new Image();
+    globalImg.src = './sample.jpg';
+    globalImg.onload = globalDraw;
+
+    var imginput = document.getElementById('imginput');
+    var pool = document.getElementById('pool');
+
+    imginput.addEventListener("dragover", function (event) {
+        event.preventDefault();
+    }, false);
+
+
+    var textinput = document.getElementById('text');
+    var posinput = document.getElementById('pos');
+    var filterinput = document.getElementById('filter');
+    var countinput = document.getElementById('count');
+    var darkinput = document.getElementById('dark');
+
+    posinput.onkeyup = globalDraw;
+    filterinput.onkeyup = globalDraw;
+    textinput.onkeyup = globalDraw;
+    countinput.onkeyup = globalDraw;
+    darkinput.onclick = globalDraw;
+
+    imginput.addEventListener("drop", function (event) {
+        console.log("drop", event);
+        // prevent default action (open as link for some elements)
+        event.preventDefault();
+        var items = event.dataTransfer.items;
+        console.log(event.dataTransfer.items);
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            var img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = URL.createObjectURL(item.getAsFile());
+            globalImg = img;
+            img.onload = function () {
+                globalDraw();
+            }
+        }
+
+    }, false);
+
+    function globalDraw() {
+        setTimeout(function () {
+
+            draw(globalImg, posinput.value, filterinput.value, textinput.value.split(','), countinput.value, darkinput.checked)
+        }, 0);
+    }
+
+    function draw(img, pos, filter, text, count, dark) {
+
+        var canvas = document.createElement('canvas');
+        var ww = 300 * count;
+        var hh = 300;
+        canvas.width = 300 * count + 600;
+        canvas.height = 900;
+        var ctx = canvas.getContext('2d');
+
+        ctx.fillStyle = "gray";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.filter = filter;
+        ctx.translate(300, 300)
+        if (img) {
+            ctx.save();
+
+
+
+            var s = ww / img.width;
+
+
+            if (img.height * s < hh) s = img.height / hh;
+
+            var w = img.width * s;
+            var h = img.height * s;
+
+            var ox = (img.width - ww / s) * pos;
+            var oy = (img.height - hh / s) * pos;
+
+            console.log(ww, hh, w, h, ox, oy)
+
+            for (var i = -1; i <= 1; i++) {
+                for (var j = -1; j <= 1; j++) {
+                    var flipx = (i + 2) % 2 == 1;
+                    var flipy = (j + 2) % 2 == 1;
+
+                    var xi = flipx ? i + 1 : i;
+                    var yi = flipy ? j + 1 : j;
+
+                    ctx.save();
+                    ctx.translate(xi * ww, yi * hh);
+                    ctx.scale(flipx ? -1 : 1, flipy ? -1 : 1);
+
+                    ctx.drawImage(img,
+                        ox, oy, ww / s, hh / s,
+                        0, 0, ww, hh);
+                    ctx.restore();
+                }
+            }
+            ctx.restore();
+        }
+
+
+
+        var allimg = new Image();
+        allimg.src = canvas.toDataURL();
+
+        allimg.onload = function () {
+
+
+            pool.innerHTML = '';
+            for (var i = 0; i < count; i++) {
+
+                (function () {
+
+
+                    var canvas2 = document.createElement('canvas');
+                    canvas2.width = 300;
+                    canvas2.height = 300;
+                    var ctx2 = canvas2.getContext('2d');
+
+                    ctx2.save();
+
+                    ctx2.drawImage(allimg, i * 300, 0, 900, 900, -300, -300, 900, 900);
+                    ctx2.restore();
+
+                    ctx2.save();
+                    ctx2.fillStyle = dark ? 'white' : 'black';
+                    ctx2.globalAlpha = 0.2;
+                    ctx2.fillRect(60, 60, 180, 180);
+                    ctx2.restore();
+
+                    ctx2.save();
+                    ctx2.font = "72px 微軟正黑體";
+                    ctx2.fillStyle = dark ? 'black' : 'white';
+                    ctx2.textAlign = 'center';
+                    var t = text[i % text.length];
+                    [...t].map((c, j) => {
+                        var x = j % 2;
+                        var y = Math.floor(j / 2);
+                        ctx2.fillText(c, x * 80 + 70 + 36, y * 80 + 70 + 70)
+                    })
+                    ctx2.restore();
+
+                    ctx2.save();
+                    ctx2.strokeStyle = dark ? 'black' : 'white';
+                    ctx2.lineWidth = 5;
+                    ctx2.strokeRect(60, 60, 180, 180);
+                    ctx2.restore();
+
+
+
+                    var image = new Image();
+                    image.src = canvas2.toDataURL();
+                    image.alt = t;
+                    image.ondragstart = event => {
+                        console.log(t);
+                        console.log(event.dataTransfer)
+                        event.dataTransfer.setDragImage(image, 0, 0)
+                    }
+                    pool.appendChild(image);
+                    console.log(i)
+
+                })();
+            }
+        }
+    }
+
+</script>
+
+</html>
