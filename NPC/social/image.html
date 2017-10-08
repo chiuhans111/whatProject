@@ -432,9 +432,12 @@ MMING,
                     var image = new Image();
                     image.src = canvas2.toDataURL();
                     image.alt = t;
-                    image.ondragstart = event => {
+                    image.onload = function () {
 
-                        event.dataTransfer.setDragImage(image, 0, 0)
+                        image.ondragstart = event => {
+
+                            event.dataTransfer.setDragImage(image, 0, 0)
+                        }
                     }
                     pool.appendChild(image);
 
