@@ -157,6 +157,7 @@
         console.log(inputfile.files)
         image.src = URL.createObjectURL(inputfile.files[0]);
         globalImg = image;
+        imgchanged = true;
         image.onload = globalDraw;
     }
 
@@ -164,6 +165,10 @@
     var globalImg = new Image();
     globalImg.src = '';
     globalImg.onload = globalDraw;
+
+    var imgchanged = true;
+    var bgImg = new Image();
+
 
     var imginput = document.getElementById('imginput');
     var pool = document.getElementById('pool');
@@ -181,10 +186,19 @@
     var autoinput = document.getElementById('auto');
     globalDraw();
 
-    posinput.onkeyup = globalDrawAuto;
-    filterinput.onkeyup = globalDrawAuto;
+    posinput.onkeyup = () => {
+        imgchanged = true;
+        globalDrawAuto();
+    }
+    filterinput.onkeyup = () => {
+        imgchanged = true;
+        globalDrawAuto();
+    }
     textinput.onkeyup = globalDrawAuto;
-    countinput.onkeyup = globalDrawAuto;
+    countinput.onkeyup = () => {
+        imgchanged = true;
+        globalDrawAuto();
+    }
     darkinput.onchange = globalDrawAuto;
 
     imginput.addEventListener("drop", function (event) {
@@ -199,6 +213,7 @@
             img.crossOrigin = "anonymous";
             img.src = URL.createObjectURL(item.getAsFile());
             globalImg = img;
+            imgchanged = true;
             img.onload = function () {
                 globalDraw();
             }
@@ -216,61 +231,64 @@
     }
 
     function draw(img, pos, filter, text, count, dark) {
+        if (imgchanged) {
 
-        var canvas = document.createElement('canvas');
-        var ww = 300 * count;
-        var hh = 300;
-        canvas.width = 300 * count + 600;
-        canvas.height = 900;
-        var ctx = canvas.getContext('2d');
+            var canvas = document.createElement('canvas');
+            var ww = 300 * count;
+            var hh = 300;
+            canvas.width = 300 * count + 600;
+            canvas.height = 900;
+            var ctx = canvas.getContext('2d');
 
-        ctx.fillStyle = "gray";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.filter = filter;
-        ctx.translate(300, 300)
-        if (img) {
-            ctx.save();
-
-
-
-            var s = ww / img.width;
+            ctx.fillStyle = "gray";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.filter = filter;
+            ctx.translate(300, 300)
+            if (img) {
+                ctx.save();
 
 
-            if (img.height * s < hh) s = img.height / hh;
 
-            var w = img.width * s;
-            var h = img.height * s;
+                var s = ww / img.width;
 
-            var ox = (img.width - ww / s) * pos;
-            var oy = (img.height - hh / s) * pos;
 
-            console.log(ww, hh, w, h, ox, oy)
+                if (img.height * s < hh) s = img.height / hh;
 
-            for (var i = -1; i <= 1; i++) {
-                for (var j = -1; j <= 1; j++) {
-                    var flipx = (i + 2) % 2 == 1;
-                    var flipy = (j + 2) % 2 == 1;
+                var w = img.width * s;
+                var h = img.height * s;
 
-                    var xi = flipx ? i + 1 : i;
-                    var yi = flipy ? j + 1 : j;
+                var ox = (img.width - ww / s) * pos;
+                var oy = (img.height - hh / s) * pos;
 
-                    ctx.save();
-                    ctx.translate(xi * ww, yi * hh);
-                    ctx.scale(flipx ? -1 : 1, flipy ? -1 : 1);
+                console.log(ww, hh, w, h, ox, oy)
 
-                    ctx.drawImage(img,
-                        ox, oy, ww / s, hh / s,
-                        0, 0, ww, hh);
-                    ctx.restore();
+                for (var i = -1; i <= 1; i++) {
+                    for (var j = -1; j <= 1; j++) {
+                        var flipx = (i + 2) % 2 == 1;
+                        var flipy = (j + 2) % 2 == 1;
+
+                        var xi = flipx ? i + 1 : i;
+                        var yi = flipy ? j + 1 : j;
+
+                        ctx.save();
+                        ctx.translate(xi * ww, yi * hh);
+                        ctx.scale(flipx ? -1 : 1, flipy ? -1 : 1);
+
+                        ctx.drawImage(img,
+                            ox, oy, ww / s, hh / s,
+                            0, 0, ww, hh);
+                        ctx.restore();
+                    }
                 }
+                ctx.restore();
             }
-            ctx.restore();
+            bgImg = new Image();
+            bgImg.src = canvas.toDataURL();
+            imgchanged = false;
         }
 
-
-
         var allimg = new Image();
-        allimg.src = canvas.toDataURL();
+        allimg.src = bgImg.src;
 
         allimg.onload = function () {
 
