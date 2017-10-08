@@ -128,9 +128,16 @@
                 <input type="text" id="count" value="3" size="50">
                 <br><small class="right">要做多少圖呢</small>
             </p>
-            <p>5. 黑色字體
-                <input type="checkbox" id="dark">
-                <br><small class="right">當背景太亮時可採用</small>
+            <p>5. 字體顏色
+                <input id="c1" type="radio" name="color" value="white,black" checked><label for="c1">白</label>
+                <input id="c2" type="radio" name="color" value="black,white"><label for="c2">黑</label>
+                <input id="c3" type="radio" name="color" value="#F44336,white"><label for="c3">紅</label>
+                <input id="c4" type="radio" name="color" value="#FF9800,black"><label for="c4">橙</label>
+                <input id="c5" type="radio" name="color" value="#FFEB3B,black"><label for="c5">黃</label>
+                <input id="c6" type="radio" name="color" value="#4CAF50,black"><label for="c6">綠</label>
+                <input id="c7" type="radio" name="color" value="#03A9F4,black"><label for="c7">藍</label>
+                <input id="c8" type="radio" name="color" value="#9C27B0,white"><label for="c8">紫</label>
+                <br><small class="right">盡量先採用黑白，除非背景就是黑白，有把握才用顏色歐</small>
             </p>
         </div>
 
@@ -161,13 +168,9 @@
         image.onload = globalDraw;
     }
 
-
-    var globalImg = new Image();
-    globalImg.src = '';
-    globalImg.onload = globalDraw;
-
-    var imgchanged = true;
-    var bgImg = new Image();
+    var imgchanged = false;
+    var globalImg = null;
+    var bgImg = null;
 
 
     var imginput = document.getElementById('imginput');
@@ -182,9 +185,11 @@
     var posinput = document.getElementById('pos');
     var filterinput = document.getElementById('filter');
     var countinput = document.getElementById('count');
-    var darkinput = document.getElementById('dark');
+    var colorinput = document.getElementsByName('color');
     var autoinput = document.getElementById('auto');
-    globalDraw();
+
+    var color = 'white';
+    var bgcolor = 'black';
 
     posinput.onkeyup = () => {
         imgchanged = true;
@@ -199,8 +204,19 @@
         imgchanged = true;
         globalDrawAuto();
     }
-    darkinput.onchange = globalDrawAuto;
 
+
+
+    [...colorinput].map(input => {
+        if (input.checked)
+            [color, bgcolor] = input.value.split(',');
+        input.onchange = function () {
+            [color, bgcolor] = input.value.split(',');
+            globalDrawAuto();
+        }
+    })
+
+    globalDraw();
     imginput.addEventListener("drop", function (event) {
         console.log("drop", event);
         // prevent default action (open as link for some elements)
@@ -226,21 +242,27 @@
     }
 
     function globalDraw() {
-        draw(globalImg, posinput.value, filterinput.value, textinput.value.split(','), countinput.value, darkinput.checked)
+        draw(globalImg, posinput.value, filterinput.value, textinput.value.split(','), countinput.value, color, bgcolor)
 
     }
 
-    function draw(img, pos, filter, text, count, dark) {
-        if (imgchanged) {
+    function draw(img, pos, filter, text, count, color, bgcolor) {
+        var canvas = document.createElement('canvas');
+        var ww = 300 * count;
+        var hh = 300;
+        canvas.width = ww + 600;
+        canvas.height = hh + 600;
+        var ctx = canvas.getContext('2d');
 
-            var canvas = document.createElement('canvas');
-            var ww = 300 * count;
-            var hh = 300;
-            canvas.width = 300 * count + 600;
-            canvas.height = 900;
-            var ctx = canvas.getContext('2d');
+        if (!img) {
+            ctx.fillStyle = bgcolor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
 
-            ctx.fillStyle = "gray";
+        if (imgchanged && img != null) {
+            console.log('havy')
+
+            ctx.fillStyle = 'gray';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.filter = filter;
             ctx.translate(300, 300)
@@ -260,7 +282,7 @@
                 var ox = (img.width - ww / s) * pos;
                 var oy = (img.height - hh / s) * pos;
 
-                console.log(ww, hh, w, h, ox, oy)
+
 
                 for (var i = -1; i <= 1; i++) {
                     for (var j = -1; j <= 1; j++) {
@@ -282,13 +304,19 @@
                 }
                 ctx.restore();
             }
-            bgImg = new Image();
-            bgImg.src = canvas.toDataURL();
-            imgchanged = false;
+
+
         }
 
+        if (!img || imgchanged) {
+            bgImg = new Image();
+            bgImg.src = canvas.toDataURL();
+        }
+
+        imgchanged = false;
+
         var allimg = new Image();
-        allimg.src = bgImg.src;
+        allimg.src = bgImg.src
 
         allimg.onload = function () {
             var size = 180;
@@ -311,9 +339,9 @@
                     ctx2.restore();
 
                     ctx2.save();
-                    ctx2.fillStyle = dark ? 'white' : 'black';
+                    ctx2.fillStyle = bgcolor;
                     ctx2.globalAlpha = 0.2;
-                    ctx2.fillRect(off, off, size, size);
+                    ctx2.fillRect(off - 2, off - 2, size + 4, size + 4);
                     ctx2.restore();
 
                     var t = text[i % text.length];
@@ -325,7 +353,7 @@
 
                     ctx2.save();
                     ctx2.font = ts + "px 微軟正黑體";
-                    ctx2.fillStyle = dark ? 'black' : 'white';
+                    ctx2.fillStyle = color;
                     ctx2.textAlign = 'center';
                     ctx2.textBaseline = 'middle';
 
@@ -342,7 +370,7 @@
                     ctx2.restore();
 
                     ctx2.save();
-                    ctx2.strokeStyle = dark ? 'black' : 'white';
+                    ctx2.strokeStyle = color;
                     ctx2.lineWidth = 5;
                     ctx2.strokeRect(60, 60, 180, 180);
                     ctx2.restore();
@@ -353,12 +381,11 @@
                     image.src = canvas2.toDataURL();
                     image.alt = t;
                     image.ondragstart = event => {
-                        console.log(t);
-                        console.log(event.dataTransfer)
+
                         event.dataTransfer.setDragImage(image, 0, 0)
                     }
                     pool.appendChild(image);
-                    console.log(i)
+
 
                 })();
             }
