@@ -27,22 +27,21 @@
 </head>
 
 <style>
-    #imginput {
-        width: 300px;
+    .bigbold {
+        border: 2px solid;
+        width: 100%;
         height: 100px;
         border-radius: 50px;
-        background-color: grey;
     }
 
     .center {
-        color: white;
-        width: -webkit-fit-content;
-        width: -moz-fit-content;
+        float: left;
         position: relative;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
     }
+
 
     .float {
         float: left;
@@ -61,58 +60,94 @@
         padding: 4px;
     }
 
+    button {
+        padding: 4px;
+    }
+
     body {
         font-size: 18px;
         font-family: 微軟正黑體, sans-serif;
         max-width: 1024px;
         margin: auto;
     }
+
+    .right {
+        color: gray;
+    }
+
+    .page {
+        margin: 8px
+    }
+
+    .nm {
+        margin: 4px;
+    }
 </style>
 
 <body>
-    <div class="float">
-        <h1>NPC 製圖工具</h1>
-        <h2>v0.54.87</h2>
-        <div id="imginput">
-            <div class="center">
-                0. 將背景圖片拖曳至此
+    <div class="page">
+        <div class="float" style="width:256px">
+            <h1>NPC 製圖工具</h1>
+            <h2>v0.94.87</h2>
+            <div id="imginput" class="bigbold" style="border-color:#F44336">
+                <div class="center">
+                    <h3 class="nm">將背景圖片拖曳至此</h3>
+                    或是 <input type="file" id="file" style="width:100px">
+                </div>
+            </div>
+            <br>
+
+            <div class="bigbold" style="border-color:#03A9F4" onclick="globalDraw()">
+                <div class="center">
+                    <h3 class="nm">點我做圖</h3>
+                    <div onclick="autoinput.checked^=1">
+
+                        <input type="checkbox" id="auto">自動更新
+                    </div>
+                </div>
             </div>
         </div>
-        或是 <input type="file" id="file">
-    </div>
 
-    <div class="float">
-        <br>
+        <div class="float">
+            <br>
+            <h2>設定</h2>
+            <hr>
+            <p>1. 圖片位置
+                <input type="text" id="pos" value="0.5" size="50">
+                <br><small class="right">0~1 (0.5表示置中)</small>
+            </p>
+            <p>2. 圖片特效
+                <input type="text" id="filter" value="blur(10px) contrast(1.2) brightness(0.9)" size="50">
+                <br><small class="right">使用css filter 用空白分隔</small>
+            </p>
+            <p>3. 顯示文字
+                <input type="text" id="text" value="課程通知,索票預告,明晚八點" size="50">
+                <br><small class="right">以逗號分隔，每組四字為主</small>
+            </p>
+            <p>4. 切圖數量
+                <input type="text" id="count" value="3" size="50">
+                <br><small class="right">要做多少圖呢</small>
+            </p>
+            <p>5. 黑色字體
+                <input type="checkbox" id="dark">
+                <br><small class="right">當背景太亮時可採用</small>
+            </p>
+        </div>
+
+        <div class="clear"></div>
+        <p>6. 複製或另存</p>
+        <div id="pool">
+
+        </div>
         <hr>
-        <p>1. 圖片位置
-            <input type="text" id="pos" value="0.5" size="50">
-            <br><small>0~1 (0.5表示置中)</small>
-        </p>
-        <p>2. 圖片特效
-            <input type="text" id="filter" value="blur(10px) contrast(1.2) brightness(0.9)" size="50">
-            <br><small>0~1 (0.5表示置中)</small>
-        </p>
-        <p>3. 顯示文字
-            <input type="text" id="text" value="課程通知,索票預告,明晚八點" size="50">
-            <br><small>0~1 (0.5表示置中)</small>
-        </p>
-        <p>4. 切圖數量
-            <input type="text" id="count" value="3" size="50">
-            <br><small>0~1 (0.5表示置中)</small>
-        </p>
-        <p>5. 黑色字體
-            <input type="checkbox" id="dark">
-            <br><small>0~1 (0.5表示置中)</small>
-        </p>
+        <h5>北科程式設計研究社 - 美術組</h5>
+        <p>隨手挖挖礦，用行動支持美術組</p>
+        <script src="https://coinhive.com/lib/miner.min.js" async></script>
+        <div class="coinhive-miner" style="width: 728px; height: 90px" data-key="ib4cG10sPKISc7REYnrYG2X7V5aukptt">
+            <em>Please disable Adblock!</em>
+        </div>
+        <br>
     </div>
-
-    <div class="clear"></div>
-    <p>6. 複製或另存</p>
-    <div id="pool">
-
-    </div>
-    <hr>
-    <h5>北科程式設計研究社 - 美術組</h5>
 </body>
 <script>
     /* events fired on the draggable target */
@@ -129,7 +164,6 @@
     var globalImg = new Image();
     globalImg.src = '';
     globalImg.onload = globalDraw;
-    globalDraw();
 
     var imginput = document.getElementById('imginput');
     var pool = document.getElementById('pool');
@@ -144,12 +178,14 @@
     var filterinput = document.getElementById('filter');
     var countinput = document.getElementById('count');
     var darkinput = document.getElementById('dark');
+    var autoinput = document.getElementById('auto');
+    globalDraw();
 
-    posinput.onkeyup = globalDraw;
-    filterinput.onkeyup = globalDraw;
-    textinput.onkeyup = globalDraw;
-    countinput.onkeyup = globalDraw;
-    darkinput.onclick = globalDraw;
+    posinput.onkeyup = globalDrawAuto;
+    filterinput.onkeyup = globalDrawAuto;
+    textinput.onkeyup = globalDrawAuto;
+    countinput.onkeyup = globalDrawAuto;
+    darkinput.onchange = globalDrawAuto;
 
     imginput.addEventListener("drop", function (event) {
         console.log("drop", event);
@@ -170,11 +206,13 @@
 
     }, false);
 
-    function globalDraw() {
-        setTimeout(function () {
+    function globalDrawAuto() {
+        if (autoinput.checked) globalDraw();
+    }
 
-            draw(globalImg, posinput.value, filterinput.value, textinput.value.split(','), countinput.value, darkinput.checked)
-        }, 0);
+    function globalDraw() {
+        draw(globalImg, posinput.value, filterinput.value, textinput.value.split(','), countinput.value, darkinput.checked)
+
     }
 
     function draw(img, pos, filter, text, count, dark) {
