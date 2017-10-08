@@ -127,8 +127,9 @@
 
 
     var globalImg = new Image();
-    globalImg.src = './sample.png';
+    globalImg.src = '';
     globalImg.onload = globalDraw;
+    globalDraw();
 
     var imginput = document.getElementById('imginput');
     var pool = document.getElementById('pool');
