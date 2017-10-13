@@ -340,11 +340,13 @@ MMING,
         pool.innerHTML = '請稍等...' + '<img>'.repeat(countinput.value);
         return new Promise(done => {
             requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
 
-                draw(globalImg, posinput.value, filterinput.value,
-                    textinput.value.split(','), countinput.value, color, bgcolor,
-                    sizeinput.value);
-                done();
+                    draw(globalImg, posinput.value, filterinput.value,
+                        textinput.value.split(','), countinput.value, color, bgcolor,
+                        sizeinput.value);
+                    done();
+                })
             })
         })
     }
