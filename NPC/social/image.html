@@ -44,6 +44,7 @@
 
 
     .float {
+        position: relative;
         float: left;
         margin: 16px;
     }
@@ -102,7 +103,22 @@
 
     .subpage {
         max-width: 900px;
+    }
 
+    .block {
+
+        position: absolute;
+        background-color: white;
+        border: 1px solid;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+
+        opacity: 0.3;
+        z-index: 4;
+
+        pointer-events: none;
     }
 </style>
 
@@ -202,12 +218,20 @@ MMING,
                 </div>
             </div>
         </div>
-        <div class="float">
+        <div class="float" style="max-width:1000px">
+            <div class="block" hidden id="loadblock">
+                <div class="center" id="loadmessage">
+                    請稍等...
+                </div>
+            </div>
 
             <p>7. 複製或另存</p>
             <div id="pool">
 
             </div>
+
+        </div>
+        <div class="clear" style="max-width:1000px">
             <hr>
             <h5>北科程式設計研究社 - 美術組</h5>
             <p>隨手挖挖礦，用行動支持美術組</p>
@@ -279,6 +303,8 @@ MMING,
     var colorinput = document.getElementsByName('color');
     var autoinput = document.getElementById('auto');
     var sizeinput = document.getElementById('size');
+    var loadblock = document.getElementById('loadblock');
+    var loadmessage = document.getElementById('loadmessage');
 
     var color = 'white';
     var bgcolor = 'black';
@@ -337,15 +363,22 @@ MMING,
     }
 
     function globalDraw() {
-        pool.innerHTML = '請稍等...' + '<img>'.repeat(countinput.value);
+        loadmessage.textContent = '處理中...';
+        loadblock.hidden = false;
         return new Promise(done => {
             requestAnimationFrame(function () {
                 requestAnimationFrame(function () {
 
                     draw(globalImg, posinput.value, filterinput.value,
                         textinput.value.split(','), countinput.value, color, bgcolor,
-                        sizeinput.value);
-                    done();
+                        sizeinput.value).then(function (images) {
+                            Promise.all(images).then(function () {
+                                loadblock.hidden = true;
+                                done();
+                            })
+                        })
+
+
                 })
             })
         })
@@ -358,15 +391,17 @@ MMING,
         var ww = 300 * count;
         var hh = 300;
 
-        var canvaswidth = (ww + 600);
-        var canvasheight = (hh + 600);
+        var canvaswidth = ww;
+        var canvasheight = hh;
 
         canvas.width = canvaswidth * scale;
         canvas.height = canvasheight * scale;
 
         var ctx = canvas.getContext('2d');
 
+
         ctx.scale(scale, scale);
+
 
         if (!img) {
             ctx.fillStyle = bgcolor;
@@ -374,12 +409,12 @@ MMING,
         }
 
         if (imgchanged && img != null) {
-            console.log('havy')
+
 
             ctx.fillStyle = 'gray';
             ctx.fillRect(0, 0, canvaswidth, canvasheight);
             ctx.filter = filter;
-            ctx.translate(300, 300)
+            //ctx.translate(300, 300)
             if (img) {
                 ctx.save();
 
@@ -433,104 +468,116 @@ MMING,
         var allimg = new Image();
         allimg.src = bgImg.src
 
-        allimg.onload = function () {
-            var size = 150;
-            var off = (300 - size) / 2;
+        return new Promise(done => {
 
-            pool.innerHTML = '';
-            for (var i = 0; i < count; i++) {
+            var images = [];
+            allimg.onload = function () {
+                var size = 150;
+                var off = (300 - size) / 2;
 
-                (function () {
-
-
-                    var canvas2 = document.createElement('canvas');
-                    canvas2.width = 300 * scale;
-                    canvas2.height = 300 * scale;
-
-                    var ctx2 = canvas2.getContext('2d');
-                    ctx2.scale(scale, scale)
-
-                    ctx2.save();
-
-                    ctx2.drawImage(allimg, i * 300 * scale, 0, 900 * scale, 900 * scale, -300, -300, 900, 900);
-                    ctx2.restore();
-
-                    ctx2.save();
-                    ctx2.fillStyle = bgcolor;
-                    ctx2.globalAlpha = 0.2;
-                    ctx2.fillRect(off - 2, off - 2, size + 4, size + 4);
-                    ctx2.restore();
-
-                    var t = text[i % text.length].match(/^\n*([^]*?)\n*$/)[1]
-
-                    var w = 1;
-                    var h = 1;
-
-                    var lines = t.split('\n');
-                    if (lines.length > 1) {
-                        lines.map(l => w = Math.max(w, l.length));
-                        h = lines.length;
-                        t = lines.map(l => l.padEnd(w)).join('');
-                    } else {
-                        w = Math.ceil(Math.sqrt(t.length));
-                        h = Math.ceil(t.length / w);
-                    }
+                pool.innerHTML = '';
+                for (var i = 0; i < count; i++) {
 
 
 
-                    var margin = 8;
-                    var ml = Math.max(w, h);
-                    var ts = Math.round((size - (ml + 1) * margin) / ml);
-
-                    ctx2.save();
-                    ctx2.font = ts + "px 微軟正黑體";
-                    ctx2.fillStyle = color;
-                    ctx2.textAlign = 'center';
-                    ctx2.textBaseline = 'middle';
-
-                    var dx = ts + margin;
-                    var dy = ts + margin;
-                    var ox = (size - ts * w - margin * (w + 1)) / 2 + off + margin + ts / 2;
-                    var oy = (size - ts * h - margin * (h + 1)) / 2 + off + margin + ts / 2;
-
-                    [...t].map((c, j) => {
-                        var x = j % w;
-                        var y = Math.floor(j / w);
-                        ctx2.fillText(c, x * dx + ox, y * dy + oy + ts / 32)
-                    })
-                    ctx2.restore();
-
-                    ctx2.save();
-                    ctx2.strokeStyle = color;
-                    ctx2.lineWidth = 3;
-                    ctx2.strokeRect(off, off, size, size);
-                    ctx2.restore();
+                    (function () {
 
 
-                    var link = document.createElement('a');
-                    var url = canvas2.toDataURL();
-                    link.href = url;
-                    link.download = t.replace(/\s/g, '');
+                        var canvas2 = document.createElement('canvas');
+                        canvas2.width = 300 * scale;
+                        canvas2.height = 300 * scale;
 
-                    var image = new Image();
-                    image.src = url;
-                    image.setAttribute('download', t)
-                    image.alt = t;
-                    image.onload = function () {
+                        var ctx2 = canvas2.getContext('2d');
+                        ctx2.scale(scale, scale)
 
-                        image.ondragstart = event => {
+                        ctx2.save();
 
-                            event.dataTransfer.setDragImage(image, 0, 0)
+                        ctx2.drawImage(allimg, i * 300 * scale, 0, 300 * scale, 300 * scale, 0, 0, 300, 300);
+                        ctx2.restore();
+
+                        ctx2.save();
+                        ctx2.fillStyle = bgcolor;
+                        ctx2.globalAlpha = 0.2;
+                        ctx2.fillRect(off - 2, off - 2, size + 4, size + 4);
+                        ctx2.restore();
+
+                        var t = text[i % text.length].match(/^\n*([^]*?)\n*$/)[1]
+
+                        var w = 1;
+                        var h = 1;
+
+                        var lines = t.split('\n');
+                        if (lines.length > 1) {
+                            lines.map(l => w = Math.max(w, l.length));
+                            h = lines.length;
+                            t = lines.map(l => l.padEnd(w)).join('');
+                        } else {
+                            w = Math.ceil(Math.sqrt(t.length));
+                            h = Math.ceil(t.length / w);
                         }
-                    }
-
-                    link.appendChild(image);
-                    pool.appendChild(link);
 
 
-                })();
+
+                        var margin = 8;
+                        var ml = Math.max(w, h);
+                        var ts = Math.round((size - (ml + 1) * margin) / ml);
+
+                        ctx2.save();
+                        ctx2.font = ts + "px 微軟正黑體";
+                        ctx2.fillStyle = color;
+                        ctx2.textAlign = 'center';
+                        ctx2.textBaseline = 'middle';
+
+                        var dx = ts + margin;
+                        var dy = ts + margin;
+                        var ox = (size - ts * w - margin * (w + 1)) / 2 + off + margin + ts / 2;
+                        var oy = (size - ts * h - margin * (h + 1)) / 2 + off + margin + ts / 2;
+
+                        [...t].map((c, j) => {
+                            var x = j % w;
+                            var y = Math.floor(j / w);
+                            ctx2.fillText(c, x * dx + ox, y * dy + oy + ts / 32)
+                        })
+                        ctx2.restore();
+
+                        ctx2.save();
+                        ctx2.strokeStyle = color;
+                        ctx2.lineWidth = 3;
+                        ctx2.strokeRect(off, off, size, size);
+                        ctx2.restore();
+
+
+                        var link = document.createElement('a');
+                        var url = canvas2.toDataURL();
+                        link.href = url;
+                        link.download = t.replace(/\s/g, '');
+
+                        var image = new Image();
+                        image.src = url;
+                        image.setAttribute('download', t)
+                        image.alt = t;
+                        images.push(new Promise(done => {
+
+                            image.onload = function () {
+
+                                image.ondragstart = event => {
+                                    event.dataTransfer.setDragImage(image, 0, 0)
+                                }
+                                done(image)
+                            }
+
+
+                        }));
+
+                        link.appendChild(image);
+                        pool.appendChild(link);
+                    })();
+
+
+                }
+                done(images);
             }
-        }
+        })
     }
 
 </script>
