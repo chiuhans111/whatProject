@@ -337,10 +337,16 @@ MMING,
     }
 
     function globalDraw() {
-        draw(globalImg, posinput.value, filterinput.value,
-            textinput.value.split(','), countinput.value, color, bgcolor,
-            sizeinput.value)
+        pool.innerHTML = '請稍等...' + '<img>'.repeat(countinput.value);
+        return new Promise(done => {
+            requestAnimationFrame(function () {
 
+                draw(globalImg, posinput.value, filterinput.value,
+                    textinput.value.split(','), countinput.value, color, bgcolor,
+                    sizeinput.value);
+                done();
+            })
+        })
     }
 
     globalDraw();
@@ -444,7 +450,7 @@ MMING,
 
                     ctx2.save();
 
-                    ctx2.drawImage(allimg, i * 300, 0, 900, 900, -300, -300, 900, 900);
+                    ctx2.drawImage(allimg, i * 300 * scale, 0, 900 * scale, 900 * scale, -300, -300, 900, 900);
                     ctx2.restore();
 
                     ctx2.save();
