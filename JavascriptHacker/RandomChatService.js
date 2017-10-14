@@ -5,7 +5,7 @@ var agent = new Agent();
 function createAgent(callback) {
     var agent = new Agent();
     var f = document.createElement('iframe');
-    f.height = 500;
+    f.height = 250;
     f.src = 'http://www.liveany.com/web.html';
     document.body.appendChild(f);
 
@@ -23,7 +23,7 @@ function createAgent(callback) {
 }
 
 // multi chat
-var chatLimit = 2;
+var chatLimit = 16;
 var packs = [];
 var blockedMessages = [
     '主人的小m貓在哪裡?',
@@ -39,6 +39,9 @@ var blockedPattern = [
     includePattern('我在等你交友加我賴的信息'),
     includePattern('妹子加我微信聊天'),
     includePattern('http'),
+    regexPattern(/\d{8,10}/),
+    regexPattern(/[Ii][Dd]\s*[:：]?\s*.+/),
+    regexPattern(/\s*我\s*.\s*\+\s*我賴\s*.+/)
 ];
 
 var preprossing = [
@@ -46,6 +49,7 @@ var preprossing = [
 ];
 
 function includePattern(pat) { return function (m) { return m.includes(pat) } }
+function regexPattern(pat) { return function (m) { return m.match(pat)!=null } }
 
 function translate(message) {
     return Array.from(message).map(c => {
