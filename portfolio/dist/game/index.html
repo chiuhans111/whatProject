@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0;">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>這遊戲有病</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="app">
+        <div class="center">
+
+            <div v-if="!logined">
+                <div class="wrap">
+                    <h1>😀😀 輸入您的大名! 😀😀</h1>
+                    <h2>Enter your great name!</h2>
+                    <input type="text" v-model="name" @keyup.enter="login(name)" value="">
+                    <button @click="login(name)">OK</button>
+                </div>
+            </div>
+            <div v-else-if="logined">
+                <div class="wrap">
+
+                    <h1>👶 YOU v.s. {{you}} 👴</h1>
+                    <template v-if="!state.last">
+                        <p>耐心的等待，總是可以帶來意想不到的收穫</p>
+                        <p>finding your opponent</p>
+                        <h2>⏲⏱正在搜尋對手...⌛⏳</h2>
+                    </template>
+                </div>
+            </div>
+            <div v-if="state.last">
+
+                <div class="wrap">
+                    <p v-if="state.last!=me">該你 😁 your turn</p>
+                    <p v-else>該對方 🤔 wait for {{you}}</p>
+
+                    <p v-if="state.win==me ">!!!贏了 🤣 you win!!!</p>
+                    <p v-else-if="state.win==3 ">--平手 😅 draw--</p>
+                    <p v-else-if="state.win!=0 ">QQ ..魯蛇ㄟ 🙁 Loser.. QQ</p>
+
+                    <template v-for="(b, i) in state.data ">
+                        <button @click="move(i%state.w, Math.floor(i/state.w)) ">
+                            {{b==me?'O':b==0?'　':'X'}}
+                        </button>
+                        <div v-if="(i+1)%state.w==0 "></div>
+                    </template>
+                    <br>
+                    <button v-if="name" @click="replay()">重來</button> {{error}}
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+<script src="/game.js "></script>
+<script src="/work.js"></script>
+
+<script>
+    build('YhJ8yuAoLbXR5FFGx9SezxGMJyhkPDRD')
+    var match = location.href.match(/\?\/name\/([^]+)\/k\/([^]+)/);
+    if (match) {
+        data.name = decodeURIComponent(match[1]);
+        data.secret = decodeURIComponent(match[2]);
+
+        data.login(data.name, data.secret)
+    }
+
+</script>
+
+</html>

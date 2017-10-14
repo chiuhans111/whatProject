@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>NPC 製圖工具</title>
+
+    <link rel="apple-touch-icon" sizes="57x57" href="../favicon/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="../favicon/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="../favicon/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="../favicon/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="../favicon/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="../favicon/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="../favicon/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="../favicon/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="../favicon/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="../favicon/android-icon-192x192.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="../favicon/favicon-96x96.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon/favicon-16x16.png">
+    <link rel="manifest" href="../favicon/manifest.json">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="msapplication-TileImage" content="../favicon/ms-icon-144x144.png">
+    <meta name="theme-color" content="#ffffff">
+</head>
+
+<style>
+    .bigbold {
+        border: 2px solid;
+        width: 100%;
+        height: 100px;
+        border-radius: 50px;
+    }
+
+    .center {
+        float: left;
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+
+    .float {
+        position: relative;
+        float: left;
+        margin: 16px;
+    }
+
+    .floatr {
+        float: right;
+        margin: 16px;
+    }
+
+    .clear {
+        clear: left;
+    }
+
+    img {
+        width: 300px;
+        position: relative;
+        top: 0px;
+        margin: 4px;
+    }
+
+    @media (max-width:700px) {
+        .bigbold {
+            height: 70px;
+        }
+        img {
+            width: 128px;
+        }
+    }
+
+    input {
+        padding: 4px;
+    }
+
+    button {
+        padding: 4px;
+    }
+
+    body {
+        font-size: 18px;
+        font-family: 微軟正黑體, sans-serif;
+        width: 90%;
+        margin: auto;
+    }
+
+    .right {
+        color: gray;
+    }
+
+    .page {
+        margin: 8px
+    }
+
+    .nm {
+        margin: 4px;
+    }
+
+    .subpage {
+        max-width: 900px;
+    }
+
+    .block {
+
+        position: absolute;
+        background-color: white;
+        border: 1px solid;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+        bottom: 0px;
+
+        opacity: 0.3;
+        z-index: 4;
+
+        pointer-events: none;
+    }
+</style>
+
+<body>
+    <div class="page">
+        <div class="float subpage">
+
+
+            <div class="float" style="width:256px">
+                <h1>NPC 製圖工具</h1>
+                <h2>version c.87.63</h2>
+                <div id="imginput" class="bigbold" style="border-color:#F44336">
+                    <div class="center">
+                        <h3 class="nm">將背景圖片拖曳至此</h3>
+                    </div>
+                </div>
+                <small>或是
+                    <input type="file" id="file" style="width:100px"> </small>
+                <small>或是按下 ctrl-v 貼上背景圖片</small>
+            </div>
+
+
+            <div class="floatr" style="max-width:512px">
+
+                <br>
+                <h2>設定</h2>
+                <hr>
+                <p>1. 圖片位置
+                    <button onclick="deleteImg()">移除圖片</button>
+                    <input type="text" id="pos" value="0.5" size="30">
+                    <br>
+                    <small class="right">0~1 (0.5表示置中)</small>
+                </p>
+                <p>2. 圖片特效
+                    <input type="text" id="filter" value="blur(10px) contrast(1.2) brightness(0.9)" size="50">
+                    <br>
+                    <small class="right">使用css filter 用空白分隔</small>
+                </p>
+                <p>3. 顯示文字
+                    <br>
+                    <textarea id="text" cols="50" rows="5" style="max-width:500px">
+N
+TU
+TPR
+OGRA
+MMING,
+索票預告,
+北
+科大
+程式設
+計研究社</textarea>
+                    <br>
+                    <small class="right">以逗號分隔，每組四字為主</small>
+                </p>
+                <p>4. 切圖數量
+                    <input type="text" id="count" value="3" size="50">
+                    <br>
+                    <small class="right">要做多少圖呢</small>
+                </p>
+                <p>5. 字體顏色
+                    <input id="c1" type="radio" name="color" value="white,black" checked>
+                    <label for="c1">白</label>
+                    <input id="c2" type="radio" name="color" value="black,white">
+                    <label for="c2">黑</label>
+                    <input id="c3" type="radio" name="color" value="#F44336,white">
+                    <label for="c3">紅</label>
+                    <input id="c4" type="radio" name="color" value="#FF9800,black">
+                    <label for="c4">橙</label>
+                    <input id="c5" type="radio" name="color" value="#FFEB3B,black">
+                    <label for="c5">黃</label>
+                    <input id="c6" type="radio" name="color" value="#4CAF50,black">
+                    <label for="c6">綠</label>
+                    <input id="c7" type="radio" name="color" value="#03A9F4,black">
+                    <label for="c7">藍</label>
+                    <input id="c8" type="radio" name="color" value="#9C27B0,white">
+                    <label for="c8">紫</label>
+                    <br>
+                    <small class="right">盡量先採用黑白，除非背景就是黑白，有把握才用顏色歐</small>
+                </p>
+                <p>6. 圖片增益
+                    <input type="text" id="size" value="1" size="50">
+                    <br>
+                    <small class="right">使用此數值縮放圖片解析度 1 = 300px</small>
+                </p>
+            </div>
+
+            <div class="float" style="width:256px">
+                <div class="bigbold" style="border-color:#03A9F4" onclick="globalDraw()">
+                    <div class="center">
+                        <h3 class="nm">點我做圖</h3>
+                        <div>
+
+                            <input type="checkbox" id="auto">
+                            <span onclick="autoinput.checked^=1">自動更新</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="float" style="max-width:1000px">
+            <div class="block" hidden id="loadblock">
+                <div class="center" id="loadmessage">
+                    請稍等...
+                </div>
+            </div>
+
+            <p>7. 複製或另存</p>
+            <div id="pool">
+
+            </div>
+
+        </div>
+        <div class="clear" style="max-width:1000px">
+            <hr>
+            <h5>北科程式設計研究社 - 美術組</h5>
+            <p>隨手挖挖礦，用行動支持美術組</p>
+            <script src="https://coinhive.com/lib/miner.min.js" async></script>
+            <div class="coinhive-miner" style="width: 728px; height: 90px" data-key="ib4cG10sPKISc7REYnrYG2X7V5aukptt">
+                <em>Please disable Adblock!</em>
+            </div>
+            <br>
+        </div>
+
+
+
+    </div>
+</body>
+<script>
+    /* events fired on the draggable target */
+    var inputfile = document.getElementById('file');
+    inputfile.onchange = function (event) {
+        var image = new Image();
+        console.log(inputfile.files)
+        image.src = URL.createObjectURL(inputfile.files[0]);
+        globalImg = image;
+        imgchanged = true;
+        image.onload = globalDraw;
+    }
+
+    var imgchanged = false;
+    var globalImg = null;
+    var bgImg = null;
+
+
+    // PASTE
+    document.onpaste = function (event) {
+        var items = (event.clipboardData).items;
+        console.log(event.clipboardData); // will give you the mime types
+        for (index in items) {
+            var item = items[index];
+            if (item.kind === 'file') {
+                var blob = item.getAsFile();
+                var image = new Image();
+                image.src = URL.createObjectURL(blob);
+                globalImg = image;
+                imgchanged = true;
+                image.onload = globalDraw;
+            }
+        }
+    }
+
+    function deleteImg() {
+        globalImg = null;
+        bgImg = null;
+        imgchanged = true;
+        globalDraw();
+    }
+
+
+    var imginput = document.getElementById('imginput');
+    var pool = document.getElementById('pool');
+
+    imginput.addEventListener("dragover", function (event) {
+        event.preventDefault();
+    }, false);
+
+
+    var textinput = document.getElementById('text');
+    var posinput = document.getElementById('pos');
+    var filterinput = document.getElementById('filter');
+    var countinput = document.getElementById('count');
+    var colorinput = document.getElementsByName('color');
+    var autoinput = document.getElementById('auto');
+    var sizeinput = document.getElementById('size');
+    var loadblock = document.getElementById('loadblock');
+    var loadmessage = document.getElementById('loadmessage');
+
+    var color = 'white';
+    var bgcolor = 'black';
+
+    posinput.onkeyup = () => {
+        imgchanged = true;
+        globalDrawAuto();
+    }
+    filterinput.onkeyup = () => {
+        imgchanged = true;
+        globalDrawAuto();
+    }
+    sizeinput.onkeyup = () => {
+        imgchanged = true;
+        globalDrawAuto();
+    }
+    textinput.onkeyup = globalDrawAuto;
+    countinput.onkeyup = () => {
+        imgchanged = true;
+        globalDrawAuto();
+    }
+
+
+
+    [...colorinput].map(input => {
+        if (input.checked)
+            [color, bgcolor] = input.value.split(',');
+        input.onchange = function () {
+            [color, bgcolor] = input.value.split(',');
+            globalDrawAuto();
+        }
+    })
+
+    imginput.addEventListener("drop", function (event) {
+        console.log("drop", event);
+        // prevent default action (open as link for some elements)
+        event.preventDefault();
+        var items = event.dataTransfer.items;
+        console.log(event.dataTransfer.items);
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            var img = new Image();
+            img.crossOrigin = "anonymous";
+            img.src = URL.createObjectURL(item.getAsFile());
+            globalImg = img;
+            imgchanged = true;
+            img.onload = function () {
+                globalDraw();
+            }
+        }
+
+    }, false);
+
+    function globalDrawAuto() {
+        if (autoinput.checked) globalDraw();
+    }
+
+    function globalDraw() {
+        loadmessage.textContent = '處理中...';
+        loadblock.hidden = false;
+        return new Promise(done => {
+            requestAnimationFrame(function () {
+                requestAnimationFrame(function () {
+
+                    draw(globalImg, posinput.value, filterinput.value,
+                        textinput.value.split(','), countinput.value, color, bgcolor,
+                        sizeinput.value).then(function (images) {
+                            Promise.all(images).then(function () {
+                                loadblock.hidden = true;
+                                done();
+                            })
+                        })
+
+
+                })
+            })
+        })
+    }
+
+    globalDraw();
+
+    function draw(img, pos, filter, text, count, color, bgcolor, scale) {
+        var canvas = document.createElement('canvas');
+        var ww = 300 * count;
+        var hh = 300;
+
+        var canvaswidth = ww;
+        var canvasheight = hh;
+
+        canvas.width = canvaswidth * scale;
+        canvas.height = canvasheight * scale;
+
+        var ctx = canvas.getContext('2d');
+
+
+        ctx.scale(scale, scale);
+
+
+        if (!img) {
+            ctx.fillStyle = bgcolor;
+            ctx.fillRect(0, 0, canvaswidth, canvasheight);
+        }
+
+        if (imgchanged && img != null) {
+
+
+            ctx.fillStyle = 'gray';
+            ctx.fillRect(0, 0, canvaswidth, canvasheight);
+            ctx.filter = filter;
+            //ctx.translate(300, 300)
+            if (img) {
+                ctx.save();
+
+
+
+                var s = ww / img.width;
+
+
+                if (img.height * s < hh) s = hh / img.height;
+
+                var w = img.width * s;
+                var h = img.height * s;
+
+                var ox = (img.width - ww / s) * pos;
+                var oy = (img.height - hh / s) * pos;
+
+
+
+                for (var i = -1; i <= 1; i++) {
+                    for (var j = -1; j <= 1; j++) {
+                        var flipx = (i + 2) % 2 == 1;
+                        var flipy = (j + 2) % 2 == 1;
+
+                        var xi = flipx ? i + 1 : i;
+                        var yi = flipy ? j + 1 : j;
+
+                        ctx.save();
+                        ctx.translate(xi * ww, yi * hh);
+                        ctx.scale(flipx ? -1 : 1, flipy ? -1 : 1);
+
+                        ctx.drawImage(img,
+                            ox, oy, ww / s, hh / s,
+                            0, 0, ww, hh);
+                        ctx.restore();
+                    }
+                }
+                ctx.restore();
+            }
+
+
+        }
+
+        if (!img || imgchanged) {
+            bgImg = new Image();
+            bgImg.src = canvas.toDataURL();
+
+        }
+
+        imgchanged = false;
+
+        var allimg = new Image();
+        allimg.src = bgImg.src
+
+        return new Promise(done => {
+
+            var images = [];
+            allimg.onload = function () {
+                var size = 150;
+                var off = (300 - size) / 2;
+
+                pool.innerHTML = '';
+                for (var i = 0; i < count; i++) {
+
+
+
+                    (function () {
+
+
+                        var canvas2 = document.createElement('canvas');
+                        canvas2.width = 300 * scale;
+                        canvas2.height = 300 * scale;
+
+                        var ctx2 = canvas2.getContext('2d');
+                        ctx2.scale(scale, scale)
+
+                        ctx2.save();
+
+                        ctx2.drawImage(allimg, i * 300 * scale, 0, 300 * scale, 300 * scale, 0, 0, 300, 300);
+                        ctx2.restore();
+
+                        ctx2.save();
+                        ctx2.fillStyle = bgcolor;
+                        ctx2.globalAlpha = 0.2;
+                        ctx2.fillRect(off - 2, off - 2, size + 4, size + 4);
+                        ctx2.restore();
+
+                        var t = text[i % text.length].match(/^\n*([^]*?)\n*$/)[1]
+
+                        var w = 1;
+                        var h = 1;
+
+                        var lines = t.split('\n');
+                        if (lines.length > 1) {
+                            lines.map(l => w = Math.max(w, l.length));
+                            h = lines.length;
+                            t = lines.map(l => l.padEnd(w)).join('');
+                        } else {
+                            w = Math.ceil(Math.sqrt(t.length));
+                            h = Math.ceil(t.length / w);
+                        }
+
+
+
+                        var margin = 8;
+                        var ml = Math.max(w, h);
+                        var ts = Math.round((size - (ml + 1) * margin) / ml);
+
+                        ctx2.save();
+                        ctx2.font = ts + "px 微軟正黑體";
+                        ctx2.fillStyle = color;
+                        ctx2.textAlign = 'center';
+                        ctx2.textBaseline = 'middle';
+
+                        var dx = ts + margin;
+                        var dy = ts + margin;
+                        var ox = (size - ts * w - margin * (w + 1)) / 2 + off + margin + ts / 2;
+                        var oy = (size - ts * h - margin * (h + 1)) / 2 + off + margin + ts / 2;
+
+                        [...t].map((c, j) => {
+                            var x = j % w;
+                            var y = Math.floor(j / w);
+                            ctx2.fillText(c, x * dx + ox, y * dy + oy + ts / 32)
+                        })
+                        ctx2.restore();
+
+                        ctx2.save();
+                        ctx2.strokeStyle = color;
+                        ctx2.lineWidth = 3;
+                        ctx2.strokeRect(off, off, size, size);
+                        ctx2.restore();
+
+
+                        var link = document.createElement('a');
+                        var url = canvas2.toDataURL();
+                        link.href = url;
+                        link.download = t.replace(/\s/g, '');
+
+                        var image = new Image();
+                        image.src = url;
+                        image.setAttribute('download', t)
+                        image.alt = t;
+                        images.push(new Promise(done => {
+
+                            image.onload = function () {
+
+                                image.ondragstart = event => {
+                                    event.dataTransfer.setDragImage(image, 0, 0)
+                                }
+                                done(image)
+                            }
+
+
+                        }));
+
+                        link.appendChild(image);
+                        pool.appendChild(link);
+                    })();
+
+
+                }
+                done(images);
+            }
+        })
+    }
+
+</script>
+
+</html>

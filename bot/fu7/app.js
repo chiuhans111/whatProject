@@ -1,0 +1,1 @@
+var bot = require('./bot');
