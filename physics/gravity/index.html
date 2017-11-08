@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="http://fonts.googleapis.com/earlyaccess/notosanstc.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans TC', Arial, Helvetica, sans-serif;
+            margin: 0;
+            overflow: hidden;
+            height: 100%;
+            widows: 100%;
+        }
+
+        canvas {
+            position: fixed;
+            z-index: -1;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" class="buttom">
+        <button @click="play=!play">
+            <i class="material-icons" v-if="play">pause</i>
+            <i class="material-icons" v-else>play_arrow</i>
+        </button>
+        <button @click="setup()">
+            <i class="material-icons">autorenew</i>
+        </button>
+    </div>
+    <script src="./m.js"></script>
+</body>
+
+</html>
