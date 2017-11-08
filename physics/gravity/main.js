@@ -90,7 +90,7 @@ function background(x, y) {
 
 var final = 10;
 var stop = false;
-var max = 5000;
+var max = 8000;
 var start = 0;
 
 function update(forceUpdate) {
