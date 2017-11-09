@@ -2,10 +2,10 @@ import v from 'v';
 function Plot(canvas, setups) {
 
     if (!canvas) return;
-    
+
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
 
 
     if (!(setups instanceof Array)) setups = [setups];
@@ -42,7 +42,8 @@ function Plot(canvas, setups) {
         (plotEnd[i] - plotStart[i]) /
         (dataEnd[i] - dataStart[i]) + plotStart[i]
     );
-
+    var markedX = {};
+    var markedY = {};
     var origin = translate([0, 0]);
     origin = v.min(v.max(origin,
         [plotStart[0], plotEnd[1]]),
@@ -69,6 +70,7 @@ function Plot(canvas, setups) {
         ctx.stroke();
 
         var prev = null;
+
         for (var i of datapoints) {
             if (setup.mark !== false && i[2] !== false) {
                 var p = translate(i);
@@ -98,19 +100,30 @@ function Plot(canvas, setups) {
                 ctx.textBaseline = 'middle'
                 ctx.fillStyle = 'black';
                 ctx.textAlign = left ? 'right' : 'left';
-                ctx.fillText(Math.round(i[1] * 100) / 100, origin[0] + (left ? - 8 : 8), p[1]);
+                var my = Math.round(i[1] * 100) / 100;
+                if (!markedY[my])
+                    ctx.fillText(my, origin[0] + (left ? - 8 : 8), p[1]);
+                markedY[my] = true;
+
                 ctx.textAlign = 'center';
                 ctx.textBaseline = top ? 'bottom' : 'top';
-                ctx.fillText(Math.round(i[0] * 100) / 100, p[0], origin[1] + (top ? -8 : 8));
+                var mx = Math.round(i[0] * 100) / 100;
+                if (!markedX[mx])
+                    ctx.fillText(mx, p[0], origin[1] + (top ? -8 : 8));
+                markedX[mx] = true;
 
             }
         }
+    }
+    for (var setup of setups) {
+        var datapoints = setup.datapoints;
+        setup.color = setup.color || '#2196F3';
         var prev = null;
         for (var i of datapoints) {
             var p = translate(i);
             if (setup.connect !== false) {
                 if (prev) {
-                    ctx.strokeStyle = '#2196F3';
+                    ctx.strokeStyle = setup.color;
                     ctx.beginPath();
                     ctx.moveTo(...p);
                     ctx.lineTo(...prev);
@@ -118,7 +131,7 @@ function Plot(canvas, setups) {
                 }
             }
             if (setup.mark !== false && i[2] !== false) {
-                ctx.fillStyle = '#2196F3';
+                ctx.fillStyle = setup.color;
                 ctx.fillRect(p[0] - 2.5, p[1] - 2.5, 5, 5);
             }
             prev = p;

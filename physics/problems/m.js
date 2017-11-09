@@ -74,10 +74,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
-
-
-
-
 __WEBPACK_IMPORTED_MODULE_1_vue_dist_vue_esm__["a" /* default */].component("katex", {
 
     computed: {
@@ -92,84 +88,10 @@ __WEBPACK_IMPORTED_MODULE_1_vue_dist_vue_esm__["a" /* default */].component("kat
     template: '<span v-html="_expr"></span>'
 });
 
-
-var app = new __WEBPACK_IMPORTED_MODULE_1_vue_dist_vue_esm__["a" /* default */]({
-    el: '#app',
-    data: {
-        imass: 20,
-        force: 5,
-        Us: 0,
-        Uk: 0,
-        is1: 0.5,
-        is2: 0.5,
-        v0: 0,
-
-    },
-    computed: {
-        mass() {
-            return this.imass / 1000;
-        },
-        s1() { return this.is1 * 1000 },
-        s2() { return this.is2 * 1000 },
-        a1() {
-            return this.force / this.mass;
-            this.plot1();
-        },
-        t1() {
-            return (Math.sqrt(this.v0 * this.v0 + 2 * this.a1 * this.s1) - this.v0) / this.a1;
-        },
-        v1() {
-            return this.t1 * this.a1
-        }
-
-    },
-    watch: {
-        t1: plot1,
-        v1: _ => {
-            plot2();
-            plot3();
-        }
-    }
+window.Vue = __WEBPACK_IMPORTED_MODULE_1_vue_dist_vue_esm__["a" /* default */];
 
 
-});
-function plot1() {
-    Object(__WEBPACK_IMPORTED_MODULE_0__plot_entry__["a" /* default */])(app.$refs.plot1, [{
-        datapoints: [
-            [0, app.a1],
-            [app.t1, app.a1],
-            [app.t1, 0],
-            [app.t1 * 1.5, 0, false],
-        ]
-    }]);
-}
-plot1();
 
-function plot2() {
-    Object(__WEBPACK_IMPORTED_MODULE_0__plot_entry__["a" /* default */])(app.$refs.plot2, [{
-        datapoints: [
-            [0, app.v0],
-            [app.t1, app.v1],
-            [app.t1 * 1.5, app.v1, false],
-        ]
-    }]);
-}
-plot2();
-
-function plot3() {
-
-    Object(__WEBPACK_IMPORTED_MODULE_0__plot_entry__["a" /* default */])(app.$refs.plot3, [{
-        datapoints: [...[...Array(20)].map((_, i, a) => {
-            var x = i * app.t1 / a.length;
-            return [x, app.v0 * x + 0.5 * app.a1 * x * x]
-        }), [app.t1 * 1.5, app.s1 + app.t1 * 0.5 * app.v1]]
-        , mark: false
-    }, {
-        datapoints: [[0, 0], [app.t1, app.s1]],
-        connect: false
-    }]);
-}
-plot3();
 
 /***/ }),
 /* 1 */
@@ -181,10 +103,10 @@ plot3();
 function Plot(canvas, setups) {
 
     if (!canvas) return;
-    
+
     var ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
 
 
     if (!(setups instanceof Array)) setups = [setups];
@@ -221,7 +143,8 @@ function Plot(canvas, setups) {
         (plotEnd[i] - plotStart[i]) /
         (dataEnd[i] - dataStart[i]) + plotStart[i]
     );
-
+    var markedX = {};
+    var markedY = {};
     var origin = translate([0, 0]);
     origin = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].min(__WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].max(origin,
         [plotStart[0], plotEnd[1]]),
@@ -248,6 +171,7 @@ function Plot(canvas, setups) {
         ctx.stroke();
 
         var prev = null;
+
         for (var i of datapoints) {
             if (setup.mark !== false && i[2] !== false) {
                 var p = translate(i);
@@ -277,19 +201,30 @@ function Plot(canvas, setups) {
                 ctx.textBaseline = 'middle'
                 ctx.fillStyle = 'black';
                 ctx.textAlign = left ? 'right' : 'left';
-                ctx.fillText(Math.round(i[1] * 100) / 100, origin[0] + (left ? - 8 : 8), p[1]);
+                var my = Math.round(i[1] * 100) / 100;
+                if (!markedY[my])
+                    ctx.fillText(my, origin[0] + (left ? - 8 : 8), p[1]);
+                markedY[my] = true;
+
                 ctx.textAlign = 'center';
                 ctx.textBaseline = top ? 'bottom' : 'top';
-                ctx.fillText(Math.round(i[0] * 100) / 100, p[0], origin[1] + (top ? -8 : 8));
+                var mx = Math.round(i[0] * 100) / 100;
+                if (!markedX[mx])
+                    ctx.fillText(mx, p[0], origin[1] + (top ? -8 : 8));
+                markedX[mx] = true;
 
             }
         }
+    }
+    for (var setup of setups) {
+        var datapoints = setup.datapoints;
+        setup.color = setup.color || '#2196F3';
         var prev = null;
         for (var i of datapoints) {
             var p = translate(i);
             if (setup.connect !== false) {
                 if (prev) {
-                    ctx.strokeStyle = '#2196F3';
+                    ctx.strokeStyle = setup.color;
                     ctx.beginPath();
                     ctx.moveTo(...p);
                     ctx.lineTo(...prev);
@@ -297,7 +232,7 @@ function Plot(canvas, setups) {
                 }
             }
             if (setup.mark !== false && i[2] !== false) {
-                ctx.fillStyle = '#2196F3';
+                ctx.fillStyle = setup.color;
                 ctx.fillRect(p[0] - 2.5, p[1] - 2.5, 5, 5);
             }
             prev = p;
@@ -306,7 +241,7 @@ function Plot(canvas, setups) {
 }
 
 window.Plot = Plot;
-/* harmony default export */ __webpack_exports__["a"] = (Plot);
+/* unused harmony default export */ var _unused_webpack_default_export = (Plot);
 
 /***/ }),
 /* 2 */
