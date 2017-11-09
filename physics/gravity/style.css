@@ -15,7 +15,14 @@ button:active{
     color: white;
 }
 
-.buttom{
+.bottom{
     position: fixed;
     bottom: 0px;
+    width: 100%;
+}
+
+.right{
+    
+    position: absolute;
+    right: 0px;
 }

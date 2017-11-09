@@ -2,10 +2,52 @@ import Vue from 'vue';
 import v from './v';
 import world from './gravity';
 console.log(world);
+
+
+function checker(x, f1, f2) {
+    return Math.abs(Math.floor(x / f1) % f2) <= 0.5;
+}
+
+var backgrounds = [
+    function (x, y) {   // grid
+        var f = world.gravityMap(-x, -y, world.planets);
+        var fx = f[0] * 50;
+        var fy = f[1] * 50;
+
+        return [
+            ((
+                checker((x + fx), 100, 20) |
+                checker((y + fy), 100, 20)) ? 144 : 0),
+            ((
+                checker((x + fx), 1000, 20) |
+                checker((y + fy), 1000, 20)) ? 192 : 0),
+            ((
+                checker((x + fx), 10, 20) |
+                checker((y + fy), 10, 20)) ? 128 : 0)];
+
+    }, function (x, y) {   // fprce field
+        var f = world.gravityMap(-x, -y, world.planets);
+
+        return [f[0] + 128, f[1] + 128, 128];
+    }, function (x, y) {   // fprce field
+        var f = world.gravityMap(-x, -y, world.planets);
+
+        return [f[0] / 2 + f[1] / 2 + 128];
+    }, function (x, y) {   // fprce field
+        var f = world.gravityMap(-x, -y, world.planets);
+        var angle = Math.atan2(f[1], f[0]) * 256 / Math.PI / 2;
+        if (angle < 0) angle += 256;
+        angle %= 256;
+        return [Math.abs(angle), Math.abs(angle - 85) % 256, Math.abs(angle - 170) % 256]
+    },
+]
+
 var appdata = {
     play: true,
     preview: true,
-    setup: world.setup
+    setup: world.setup,
+    backgrounds,
+    background: () => 0
 }
 var app = new Vue({
     el: "#app",
@@ -65,32 +107,12 @@ window.addEventListener('resize', resize);
 resize();
 var t = 0;
 
-function checker(x, f1, f2) {
-    return Math.abs(Math.floor(x / f1) % f2) <= 0.5;
-}
 
 
-function background(x, y) {
-    var f = world.gravityMap(-x, -y, world.planets);
-    var fx = f[0] * 50;
-    var fy = f[1] * 50;
-
-    return [
-        ((
-            checker((x + fx), 100, 20) |
-            checker((y + fy), 100, 20)) ? 144 : 0),
-        ((
-            checker((x + fx), 1000, 20) |
-            checker((y + fy), 1000, 20)) ? 192 : 0),
-        ((
-            checker((x + fx), 10, 20) |
-            checker((y + fy), 10, 20)) ? 128 : 0)];
-
-}
 
 var final = 10;
 var stop = false;
-var max = 8000;
+var max = 15000;
 var start = 0;
 
 function update(forceUpdate) {
@@ -116,14 +138,16 @@ function update(forceUpdate) {
         var imgdata = ctx3.getImageData(0, 0, c3.width, c3.height);
         var data = imgdata.data;
         var index = -4;
-        var lastindex = 0;
+        var indexcount = 0;
+        var time = new Date().getTime();
         for (var y = 0; y < c3.height; y++) {
+            if (new Date().getTime() - time > 60) break;
             for (var x = 0; x < c3.width; x++) {
                 index += 4;
 
                 if ((index - start + data.length) % data.length > max) continue;
-                lastindex = index;
-                var color = background(...camera.toLocal([
+                indexcount++;
+                var color = appdata.background(...camera.toLocal([
                     (x + 0.5) * canvas.width / c3.width,
                     (y + 0.5) * canvas.height / c3.height]
                 ));
@@ -136,7 +160,8 @@ function update(forceUpdate) {
 
             }
         }
-        start += max;
+        start += indexcount * 4;
+
         if (start > data.length) {
             start %= data.length;
             final -= 2;

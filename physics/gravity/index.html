@@ -15,7 +15,7 @@
             margin: 0;
             overflow: hidden;
             height: 100%;
-            widows: 100%;
+            width: 100%;
         }
 
         canvas {
@@ -26,7 +26,7 @@
 </head>
 
 <body>
-    <div id="app" class="buttom">
+    <div id="app" class="bottom">
         <button @click="play=!play">
             <i class="material-icons" v-if="play">pause</i>
             <i class="material-icons" v-else>play_arrow</i>
@@ -34,7 +34,16 @@
         <button @click="setup()">
             <i class="material-icons">autorenew</i>
         </button>
+
+        <span class="right">
+            <template v-for="(bg,i) in backgrounds">
+                <button @click="background=bg">
+                    <i class="material-icons">{{"looks_"+(["one", "two"][i]||(i+1))}}</i>
+                </button>
+            </template>
+        </span>
     </div>
+
     <script src="./m.js"></script>
 </body>
 
