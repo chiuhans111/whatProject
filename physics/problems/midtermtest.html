@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../katex.min.js"></script>
+    <link rel="stylesheet" href="../katex.min.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+    <div id="app">
+        <h1>PHYSICS:</h1>
+        <h2>MIDTERM EXAM EXPLAINED</h2>
+        <hr>
+
+        <h2>THE PROBLEM</h2>
+        <svg width="350" height="150">
+            <rect width="50" height="50" style="fill:none;stroke-width:2;stroke:black" />
+            <text font-size="16" x="10" y="70">{{imass}} g</text>
+            <text font-size="16" x="90" y="40">{{force}} N</text>
+
+            <text font-size="16" x="50" y="85">{{is1}} km</text>
+            <text font-size="16" x="170" y="85">{{is2}} km</text>
+
+            <line x1="25" y1="25" x2="200" y2="25" style="stroke:black;stroke-width:2" />
+            <line x1="0" y1="50" x2="200" y2="50" style="stroke:black;stroke-width:2" />
+            <line x1="190" y1="35" x2="200" y2="25" style="stroke:black;stroke-width:2" />
+            <line x1="190" y1="15" x2="200" y2="25" style="stroke:black;stroke-width:2" />
+
+            <line x1="25" y1="90" x2="300" y2="90" style="stroke:black;stroke-width:2" />
+            <text font-size="16" x="25" y="110">p0:start</text>
+            <line x1="25" y1="85" x2="25" y2="95" style="stroke:black;stroke-width:2" />
+            <text font-size="16" x="130" y="110">p1:let go</text>
+            <line x1="140" y1="85" x2="140" y2="95" style="stroke:black;stroke-width:2" />
+            <text font-size="16" x="255" y="110">p2:end</text>
+            <line x1="255" y1="85" x2="255" y2="95" style="stroke:black;stroke-width:2" />
+        </svg>
+        <h4>(change the parameters as you like)</h4>
+
+        <p>We have a box, weight
+            <input v-model.number="imass">
+            <katex>g, V_0=</katex>
+            <input v-model.number="v0">
+            <katex>m/s</katex>
+        </p>
+
+        <p>on a table, with a static friction
+            <katex>\mu _{\mathrm {s}}=</katex>
+            <input v-model.number="Us">,
+        </p>
+
+        <p>and kinetic friction
+            <katex>\mu _{k}=</katex>
+            <input v-model.number="Uk">.
+        </p>
+        <h4>(Note: friction not support in this demo yet.)</h4>
+
+        <br>
+
+        <p>
+            Now let's apply a force
+            <input v-model.number="force">
+            <katex>N</katex>
+            toward right,
+        </p>
+        <p>
+            until the box moves
+            <input v-model.number="is1">
+            <katex>km</katex>,
+        </p>
+        <p>
+            we stop applying force, and the box keep slide for
+            <input v-model.number="is2">
+            <katex>km</katex>.
+        </p>
+        <hr>
+
+
+        <blockquote>
+            <h2>HOW TO SOLVE</h2>
+            <li>calculate the acceleration of the box done by the force.</li>
+            <li>how much time does the box need to get from p0 to p1.</li>
+            <li>find out the velocity at p1.</li>
+            <li>how much time does the box need to get from p1 to p2.</li>
+            <li>find out the velocity at p2.</li>
+        </blockquote>
+
+
+        <h2>STEP 1: the a-t graph</h2>
+        <p>
+            <katex>
+                F=ma \iff a=\frac{F}{m}
+            </katex>
+            = {{force}}N / {{mass}}kg = {{a1}}
+            <katex>
+                m/s^2
+            </katex>
+        </p>
+        <p>
+            <katex>
+                S=V_0t+\frac{1}{2}at^2
+            </katex>
+            = {{v0}}
+            <katex>t</katex>
+            +{{a1/2}}
+            <katex>t^2</katex>
+            = {{s1}}
+            <katex>m</katex>
+            (the distant between p0 ~ p1)
+        </p>
+        <p>
+            according to above, we can find
+            <katex>t=\frac{-V_0\pm\sqrt{V_0^2+2aS}}{a}</katex>
+        </p>
+        <p v-if="v0==0">
+            and because
+            <katex>V_0=0</katex>, it's a lot simpler :
+            <katex>t=\sqrt{\frac{2S}{a}}</katex>
+        </p>
+        <p>
+            then,
+            <katex>t=</katex>
+            {{t1}}
+            <katex>s</katex>
+            , let's see the (a-t) graph:
+        </p>
+        <canvas width="300" height="200" ref="plot1"></canvas>
+        <p> t0 ~ t1 the acceleration remains the same.</p>
+
+        <h2>STEP 2: velocity</h2>
+        <p>
+            <katex>V=V_0+at</katex>
+            = {{v0}} + {{a1}} * {{t1}} = {{v1}}
+            <katex>m/s</katex>
+        </p>
+        <p>see the (v-t) graph:</p>
+        <canvas width="300" height="200" ref="plot2"></canvas>
+        <p>after t1, the speed remains the same.</p>
+
+
+        <h2>STEP 3: displacement</h2>
+        <p>look at the (s-t) graph</p>
+        <canvas width="300" height="200" ref="plot3"></canvas>
+
+    </div>
+</body>
+<script src="./m.js"></script>
+<script>
+
+</script>
+
+</html>

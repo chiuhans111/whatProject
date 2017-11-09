@@ -1,0 +1,130 @@
+webpack-dev-server 2.9.1
+webpack 3.6.0
+Usage: https://webpack.js.org/configuration/dev-server/
+
+Config options:
+  --config       Path to the config file
+                         [string] [default: webpack.config.js or webpackfile.js]
+  --config-name  Name of the config to use                              [string]
+  --env          Environment passed to the config, when it is a function
+
+Basic options:
+  --context    The root directory for resolving entry point and stats
+                                       [string] [default: The current directory]
+  --entry      The entry point                                          [string]
+  --watch, -w  Watch the filesystem for changes                        [boolean]
+  --debug      Switch loaders to debug mode                            [boolean]
+  --devtool    Enable devtool for better debugging experience (Example:
+               --devtool eval-cheap-module-source-map)                  [string]
+  -d           shortcut for --debug --devtool eval-cheap-module-source-map
+               --output-pathinfo                                       [boolean]
+  -p           shortcut for --optimize-minimize --define
+               process.env.NODE_ENV="production"                       [boolean]
+  --progress   Print compilation progress in percentage                [boolean]
+
+Module options:
+  --module-bind       Bind an extension to a loader                     [string]
+  --module-bind-post                                                    [string]
+  --module-bind-pre                                                     [string]
+
+Output options:
+  --output-path                 The output path for compilation assets
+                                       [string] [default: The current directory]
+  --output-filename             The output filename of the bundle
+                                                   [string] [default: [name].js]
+  --output-chunk-filename       The output filename for additional chunks
+       [string] [default: filename with [id] instead of [name] or [id] prefixed]
+  --output-source-map-filename  The output filename for the SourceMap   [string]
+  --output-public-path          The public path for the assets          [string]
+  --output-jsonp-function       The name of the jsonp function used for chunk
+                                loading                                 [string]
+  --output-pathinfo             Include a comment with the request for every
+                                dependency (require, import, etc.)     [boolean]
+  --output-library              Expose the exports of the entry point as library
+                                                                        [string]
+  --output-library-target       The type for exposing the exports of the entry
+                                point as library                        [string]
+
+Advanced options:
+  --records-input-path       Path to the records file (reading)         [string]
+  --records-output-path      Path to the records file (writing)         [string]
+  --records-path             Path to the records file                   [string]
+  --define                   Define any free var in the bundle          [string]
+  --target                   The targeted execution environment         [string]
+  --cache                    Enable in memory caching
+                      [boolean] [default: It's enabled by default when watching]
+  --watch-stdin, --stdin     close when stdin ends                     [boolean]
+  --watch-aggregate-timeout  Timeout for gathering changes while watching
+  --watch-poll               The polling interval for watching (also enable
+                             polling)                                   [string]
+  --hot                      Enables Hot Module Replacement            [boolean]
+  --prefetch                 Prefetch this request (Example: --prefetch
+                             ./file.js)                                 [string]
+  --provide                  Provide these modules as free vars in all modules
+                             (Example: --provide jQuery=jquery)         [string]
+  --labeled-modules          Enables labeled modules                   [boolean]
+  --plugin                   Load this plugin                           [string]
+  --bail                     Abort the compilation on first error
+                                                       [boolean] [default: null]
+  --profile                  Profile the compilation and include information in
+                             stats                     [boolean] [default: null]
+  --hot-only                 Do not refresh page if HMR fails          [boolean]
+
+Resolving options:
+  --resolve-alias         Setup a module alias for resolving (Example:
+                          jquery-plugin=jquery.plugin)                  [string]
+  --resolve-extensions    Setup extensions that should be used to resolve
+                          modules (Example: --resolve-extensions .es6,.js)
+                                                                         [array]
+  --resolve-loader-alias  Setup a loader alias for resolving            [string]
+
+Optimizing options:
+  --optimize-max-chunks      Try to keep the chunk count below a limit
+  --optimize-min-chunk-size  Try to keep the chunk size above a limit
+  --optimize-minimize        Minimize javascript and switches loaders to
+                             minimizing                                [boolean]
+
+Stats options:
+  --color, --colors   Enables/Disables colors on the console
+                                           [boolean] [default: (supports-color)]
+  --info              Info                             [boolean] [default: true]
+  --quiet             Quiet                                            [boolean]
+  --client-log-level  Log level in the browser (info, warning, error or none)
+                                                      [string] [default: "info"]
+
+SSL options:
+  --https           HTTPS                                              [boolean]
+  --key             Path to a SSL key.                                  [string]
+  --cert            Path to a SSL certificate.                          [string]
+  --cacert          Path to a SSL CA certificate.                       [string]
+  --pfx             Path to a SSL pfx file.                             [string]
+  --pfx-passphrase  Passphrase for pfx file.                            [string]
+
+Response options:
+  --content-base          A directory or URL to serve HTML content from.[string]
+  --watch-content-base    Enable live-reloading of the content-base.   [boolean]
+  --history-api-fallback  Fallback to /index.html for Single Page Applications.
+                                                                       [boolean]
+  --compress              Enable gzip compression                      [boolean]
+
+Connection options:
+  --port                The port
+  --disable-host-check  Will not check the host                        [boolean]
+  --socket              Socket to listen
+  --public              The public hostname/ip address of the server    [string]
+  --host                The hostname/ip address the server will bind to
+                                                 [string] [default: "localhost"]
+  --allowed-hosts       A comma-delimited string of hosts that are allowed to
+                        access the dev server                           [string]
+
+Options:
+  --help, -h     Show help                                             [boolean]
+  --version, -v  Show version number                                   [boolean]
+  --bonjour      Broadcasts the server via ZeroConf networking on start[boolean]
+  --lazy         Lazy                                                  [boolean]
+  --inline       Inline mode (set to false to disable including client scripts
+                 like livereload)                      [boolean] [default: true]
+  --open         Open the default browser, or optionally specify a browser name
+                                                                        [string]
+  --useLocalIp   Open default browser with local IP                    [boolean]
+  --open-page    Open default browser with the specified page           [string]

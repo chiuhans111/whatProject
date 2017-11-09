@@ -1,4 +1,4 @@
-import v from './v';
+import v from 'v';
 
 var dt = 50000;
 
