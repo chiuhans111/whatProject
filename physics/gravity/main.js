@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import v from './v';
+import v from 'v';
 import world from './gravity';
 console.log(world);
 
