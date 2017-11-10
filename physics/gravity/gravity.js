@@ -10,8 +10,8 @@ function setup() {
         planets.push(new planet(
             Math.random() * 400 + 50,
             Math.random() * 500 - 250,
-            Math.random() * 10 - 5,
-            Math.random() * 400 - 20,
+            Math.random() * 40 - 5,
+            Math.random() * 1000 - 500,
             Math.random() * 40 + 10,
             Math.random() * 10 + 5,
         ))
@@ -24,9 +24,22 @@ function setup() {
         Math.random() * 10 - 5,
         Math.random() * 10 + 200,
         Math.random() * 10 + 30,
-    ))
+    ));
+
+    var s = [0, 0];
+    var m = 0;
+    for (var i of planets) {
+        s = v.add(s, v.mult(i.v, i.m));
+        m += i.m;
+    }
+    s = v.mult(s, 1 / m);
+    for (var i of planets) {
+        i.v[0] -= s[0];
+        i.v[1] -= s[1];
+    }
 }
 
+// default scene
 planets.push(new planet(
     0, 0,
     0, 0,
