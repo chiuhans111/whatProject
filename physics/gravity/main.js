@@ -11,19 +11,15 @@ function checker(x, f1, f2) {
 var backgrounds = [
     function (x, y) {   // grid
         var f = world.gravityMap(-x, -y, world.planets);
-        var fx = f[0] * 50;
-        var fy = f[1] * 50;
+        var fx = f[0] * 30;
+        var fy = f[1] * 30;
 
         return [
+            (checker((y - fy), 400, 20) ? 144 : 0),
+            (checker((x - fx), 400, 20) ? 192 : 0),
             ((
-                checker((x + fx), 100, 20) |
-                checker((y + fy), 100, 20)) ? 144 : 0),
-            ((
-                checker((x + fx), 1000, 20) |
-                checker((y + fy), 1000, 20)) ? 192 : 0),
-            ((
-                checker((x + fx), 10, 20) |
-                checker((y + fy), 10, 20)) ? 128 : 0)];
+                checker((x - fx), 10, 20) |
+                checker((y - fy), 10, 20)) ? 128 : 0)];
 
     }, function (x, y) {   // fprce field
         var f = world.gravityMap(-x, -y, world.planets);
@@ -114,9 +110,12 @@ var final = 10;
 var stop = false;
 var max = 15000;
 var start = 0;
-
+var lastbackground = appdata.background;
 function update(forceUpdate) {
-
+    if (lastbackground != appdata.background) {
+        final = 16;
+        lastbackground = appdata.background;
+    }
     if (appdata.play) {
         t++;
         stop = false;
@@ -172,7 +171,7 @@ function update(forceUpdate) {
         ctx.fillStyle = '#888888';
 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx2.filter = 'blur(' + (final - 2) * 2 + 'px)'
+        ctx2.filter = 'blur(' + (final - 2) * 1.5 + 'px)';
         ctx2.drawImage(c3, 0, 0, canvas.width, canvas.height);
         ctx.drawImage(c2, 0, 0, canvas.width, canvas.height);
 
@@ -189,10 +188,13 @@ function update(forceUpdate) {
             ctx.fill();
             ctx.stroke();
 
-            /*
+            ctx.save();
+            ctx.strokeStyle = 'gray';
+            ctx.lineWidth = '2px';
             ctx.moveTo(i.p[0], i.p[1]);
-            ctx.lineTo(i.p[0] + i.a[0] * 200, i.p[1] + i.a[1] * 200);
-            ctx.stroke();*/
+            ctx.lineTo(i.p[0] + i.a[0] / 2, i.p[1] + i.a[1] / 2);
+            ctx.stroke();
+            ctx.restore();
         }
 
 

@@ -102,11 +102,20 @@ module.exports = g;
     sub(a, b) {
         return a.map((x, i) => x - b[i])
     },
+    multeach(a, b) {
+        return a.map((x, i) => x * b[i])
+    },
     mult(a, b) {
         return a.map(x => x * b);
     },
     magsq(a) {
         return a[0] * a[0] + a[1] * a[1];
+    },
+    max(a, b) {
+        return a.map((x, i) => Math.max(x, b[i]));
+    },
+    min(a, b) {
+        return a.map((x, i) => Math.min(x, b[i]));
     }
 });
 
@@ -117,7 +126,7 @@ module.exports = g;
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_vue__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__v__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_v__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__gravity__ = __webpack_require__(8);
 
 
@@ -125,23 +134,22 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 console.log(__WEBPACK_IMPORTED_MODULE_2__gravity__["a" /* default */]);
 
 
+function checker(x, f1, f2) {
+    return Math.abs(Math.floor(x / f1) % f2) <= 0.5;
+}
 
 var backgrounds = [
     function (x, y) {   // grid
         var f = __WEBPACK_IMPORTED_MODULE_2__gravity__["a" /* default */].gravityMap(-x, -y, __WEBPACK_IMPORTED_MODULE_2__gravity__["a" /* default */].planets);
-        var fx = f[0] * 50;
-        var fy = f[1] * 50;
+        var fx = f[0] * 30;
+        var fy = f[1] * 30;
 
         return [
+            (checker((y - fy), 400, 20) ? 144 : 0),
+            (checker((x - fx), 400, 20) ? 192 : 0),
             ((
-                checker((x + fx), 100, 20) |
-                checker((y + fy), 100, 20)) ? 144 : 0),
-            ((
-                checker((x + fx), 1000, 20) |
-                checker((y + fy), 1000, 20)) ? 192 : 0),
-            ((
-                checker((x + fx), 10, 20) |
-                checker((y + fy), 10, 20)) ? 128 : 0)];
+                checker((x - fx), 10, 20) |
+                checker((y - fy), 10, 20)) ? 128 : 0)];
 
     }, function (x, y) {   // fprce field
         var f = __WEBPACK_IMPORTED_MODULE_2__gravity__["a" /* default */].gravityMap(-x, -y, __WEBPACK_IMPORTED_MODULE_2__gravity__["a" /* default */].planets);
@@ -150,7 +158,13 @@ var backgrounds = [
     }, function (x, y) {   // fprce field
         var f = __WEBPACK_IMPORTED_MODULE_2__gravity__["a" /* default */].gravityMap(-x, -y, __WEBPACK_IMPORTED_MODULE_2__gravity__["a" /* default */].planets);
 
-        return [f[0]/2 + f[1]/2 + 128];
+        return [f[0] / 2 + f[1] / 2 + 128];
+    }, function (x, y) {   // fprce field
+        var f = __WEBPACK_IMPORTED_MODULE_2__gravity__["a" /* default */].gravityMap(-x, -y, __WEBPACK_IMPORTED_MODULE_2__gravity__["a" /* default */].planets);
+        var angle = Math.atan2(f[1], f[0]) * 256 / Math.PI / 2;
+        if (angle < 0) angle += 256;
+        angle %= 256;
+        return [Math.abs(angle), Math.abs(angle - 85) % 256, Math.abs(angle - 170) % 256]
     },
 ]
 
@@ -178,7 +192,7 @@ var camera = {
         matrix = matrix.translate(canvas.width / 2, canvas.height / 2);
         matrix = matrix.scale(this.s);
         matrix = matrix.rotate(this.r);
-        matrix = matrix.translate(...__WEBPACK_IMPORTED_MODULE_1__v__["a" /* default */].mult(this.p, -1));
+        matrix = matrix.translate(...__WEBPACK_IMPORTED_MODULE_1_v__["a" /* default */].mult(this.p, -1));
         this.matrix = matrix;
     },
     toGlobal(point) {
@@ -219,9 +233,6 @@ window.addEventListener('resize', resize);
 resize();
 var t = 0;
 
-function checker(x, f1, f2) {
-    return Math.abs(Math.floor(x / f1) % f2) <= 0.5;
-}
 
 
 
@@ -229,9 +240,12 @@ var final = 10;
 var stop = false;
 var max = 15000;
 var start = 0;
-
+var lastbackground = appdata.background;
 function update(forceUpdate) {
-
+    if (lastbackground != appdata.background) {
+        final = 16;
+        lastbackground = appdata.background;
+    }
     if (appdata.play) {
         t++;
         stop = false;
@@ -287,7 +301,7 @@ function update(forceUpdate) {
         ctx.fillStyle = '#888888';
 
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx2.filter = 'blur(' + (final - 2) * 2 + 'px)'
+        ctx2.filter = 'blur(' + (final - 2) * 1.5 + 'px)';
         ctx2.drawImage(c3, 0, 0, canvas.width, canvas.height);
         ctx.drawImage(c2, 0, 0, canvas.width, canvas.height);
 
@@ -304,10 +318,13 @@ function update(forceUpdate) {
             ctx.fill();
             ctx.stroke();
 
-            /*
+            ctx.save();
+            ctx.strokeStyle = 'gray';
+            ctx.lineWidth = '2px';
             ctx.moveTo(i.p[0], i.p[1]);
-            ctx.lineTo(i.p[0] + i.a[0] * 200, i.p[1] + i.a[1] * 200);
-            ctx.stroke();*/
+            ctx.lineTo(i.p[0] + i.a[0] / 2, i.p[1] + i.a[1] / 2);
+            ctx.stroke();
+            ctx.restore();
         }
 
 
@@ -11361,7 +11378,7 @@ module.exports = win;
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__v__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_v__ = __webpack_require__(1);
 
 
 var dt = 50000;
@@ -11374,8 +11391,8 @@ function setup() {
         planets.push(new planet(
             Math.random() * 400 + 50,
             Math.random() * 500 - 250,
-            Math.random() * 10 - 5,
-            Math.random() * 400 - 20,
+            Math.random() * 40 - 5,
+            Math.random() * 1000 - 500,
             Math.random() * 40 + 10,
             Math.random() * 10 + 5,
         ))
@@ -11388,9 +11405,22 @@ function setup() {
         Math.random() * 10 - 5,
         Math.random() * 10 + 200,
         Math.random() * 10 + 30,
-    ))
+    ));
+
+    var s = [0, 0];
+    var m = 0;
+    for (var i of planets) {
+        s = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].add(s, __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].mult(i.v, i.m));
+        m += i.m;
+    }
+    s = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].mult(s, 1 / m);
+    for (var i of planets) {
+        i.v[0] -= s[0];
+        i.v[1] -= s[1];
+    }
 }
 
+// default scene
 planets.push(new planet(
     0, 0,
     0, 0,
@@ -11435,9 +11465,9 @@ function planet(x, y, vx, vy, mass, size) {
     this.m = size;
     this.s = size;
     this.apply = function () {
-        me.a = __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].mult(me.f, 1 / me.m);
-        me.p = __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].add(me.p, __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].mult(me.v, 1 / dt));
-        me.v = __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].add(me.v, __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].mult(me.a, 1 / dt));
+        me.a = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].mult(me.f, 1 / me.m);
+        me.p = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].add(me.p, __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].mult(me.v, 1 / dt));
+        me.v = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].add(me.v, __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].mult(me.a, 1 / dt));
         me.f = [0, 0];
     }
 }
@@ -11445,8 +11475,8 @@ function planet(x, y, vx, vy, mass, size) {
 var g = 100000;
 
 function gravity(p1, p2, min = 0) {
-    var d = __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].sub(p1, p2);
-    var dd = __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].magsq(d);
+    var d = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].sub(p1, p2);
+    var dd = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].magsq(d);
     if (dd < 0.0001) dd = 0.0001;
     var f = g / dd;
     if (dd < min * min) f = -(min - Math.sqrt(dd)) * g;
@@ -11459,7 +11489,7 @@ function gravity(p1, p2, min = 0) {
 function gravityMap(x, y, planets) {
     var f = [0, 0];
     for (var i of planets) {
-        f = __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].add(f, __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].mult(gravity(i.p, [x, y]), i.m));
+        f = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].add(f, __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].mult(gravity(i.p, [x, y]), i.m));
     }
     return f;
 }
@@ -11471,10 +11501,10 @@ function simulate(planets) {
             for (var j = i + 1; j < planets.length; j++) {
                 var p1 = planets[i];
                 var p2 = planets[j];
-                var gg = __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].mult(gravity(p1.p, p2.p, (p1.s + p2.s) / 2), p1.m * p2.m);
+                var gg = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].mult(gravity(p1.p, p2.p, (p1.s + p2.s) / 2), p1.m * p2.m);
 
-                p2.f = __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].add(p2.f, gg);
-                p1.f = __WEBPACK_IMPORTED_MODULE_0__v__["a" /* default */].sub(p1.f, gg);
+                p2.f = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].add(p2.f, gg);
+                p1.f = __WEBPACK_IMPORTED_MODULE_0_v__["a" /* default */].sub(p1.f, gg);
             }
         }
 
