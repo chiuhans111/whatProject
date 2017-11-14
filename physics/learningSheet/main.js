@@ -1,24 +1,16 @@
 import Vue from 'vue/dist/vue.esm';
 import plot from './source/plot/plot.vue';
 import katex from './source/katex/katex.vue';
-
+import sheetmd from './source/sheetmd/sheetmd.js';
+import './style/style.css';
+import './dist/test.md';
 Vue.component("katex", katex);
 Vue.component("plot", plot);
-/*
-Vue.component("katex", {
-
-    computed: {
-        _expr: function () {
-            try {
-                return katex.renderToString(this.$slots.default[0].text, { throwOnError: false });
-            } catch (err) {
-                return ""
-            }
-        }
-    },
-    template: '<span v-html="_expr"></span>'
-});
-*/
 
 window.Vue = Vue;
+
+
+var config = window.location.href.match(/\?([^\/]+)\/(\w*)/);
+
+sheetmd.load(config[1], config[2])
 
