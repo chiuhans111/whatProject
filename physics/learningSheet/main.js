@@ -1,6 +1,10 @@
-import Plot from '../plot/entry';
 import Vue from 'vue/dist/vue.esm';
+import plot from './source/plot/plot.vue';
+import katex from './source/katex/katex.vue';
 
+Vue.component("katex", katex);
+Vue.component("plot", plot);
+/*
 Vue.component("katex", {
 
     computed: {
@@ -14,7 +18,7 @@ Vue.component("katex", {
     },
     template: '<span v-html="_expr"></span>'
 });
+*/
 
 window.Vue = Vue;
-
 

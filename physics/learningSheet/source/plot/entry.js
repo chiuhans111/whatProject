@@ -1,4 +1,25 @@
 import v from 'v';
+
+function fmt(x) {
+    var text = x.toString();
+    var e = 0;
+    if (Math.floor(x).toString().length > 4) {
+        var e = Math.floor(Math.log10(x));
+        var n = x / Math.pow(10, e);
+        text = n.toString();
+    }
+    text = text.replace(/(\d)\.(\d+)/, function (text, g1, g2) {
+        return g1 + '.' + g2.substr(0, 2);
+    })
+    if (e != 0) return text + 'e+' + e;
+    else return text;
+}
+
+/**
+ * 
+ * @param {HTMLCanvasElement} canvas 
+ * @param {*} setups 
+ */
 function Plot(canvas, setups) {
 
     if (!canvas) return;
@@ -12,9 +33,8 @@ function Plot(canvas, setups) {
 
 
 
-    var margin = 32;
-    var plotStart = [margin * 2, canvas.height - margin];
-    var plotEnd = [canvas.width - margin * 2, margin];
+    var margin = 10;
+
 
 
     var dataStart = null;
@@ -22,12 +42,31 @@ function Plot(canvas, setups) {
 
 
     for (var setup of setups) {
-        for (var i of setup.datapoints) {
+        if (setup.data.f instanceof Function) {
+            var data = [];
+            for (var i = 0; i < setup.data.d; i++) {
+                var x = i / (setup.data.e - setup.data.s) + setup.data.s;
+                data.push([x, setup.data.f(x)]);
+            }
+            setup.data = data;
+        }
+
+        for (var i of setup.data) {
             if (dataStart == null) dataStart = i;
             if (dataEnd == null) dataEnd = i;
             dataStart = v.min(dataStart, i);
             dataEnd = v.max(dataEnd, i);
         }
+    }
+
+
+    if (dataStart[0] == dataEnd[0]) {
+        dataStart[0]--;
+        dataEnd[0]++;
+    }
+    if (dataStart[1] == dataEnd[1]) {
+        dataStart[1]--;
+        dataEnd[1]++;
     }
 
     [0, 1].map(i => {
@@ -37,25 +76,51 @@ function Plot(canvas, setups) {
             dataStart[i] / 2 < dataEnd[i]) dataEnd[i] = 0;
     })
 
+
+    var left = Math.sign((dataStart[0] + dataEnd[0]));
+    var top = -Math.sign((dataStart[1] + dataEnd[1]));
+
+
+    var maxtextlen = 40;
+    for (var i of setups) {
+        if (i.mark !== false)
+            for (var j of i.data) {
+                maxtextlen = Math.max(
+                    ctx.measureText(fmt(j[1])).width,
+                    maxtextlen);
+            }
+    }
+    maxtextlen += 8;
+    maxtextlen = Math.round(maxtextlen);
+    var plotStart = [
+        margin + (left > 0 ? maxtextlen : 0),
+        canvas.height - margin - (top < 0 ? 24 : 0)];
+    var plotEnd = [
+        canvas.width - margin - (left < 0 ? maxtextlen : 0),
+        margin];
+
+    left = left >= 0;
+    top = top > 0;
     var translate = point => [0, 1].map(i =>
-        (point[i] - dataStart[i]) *
-        (plotEnd[i] - plotStart[i]) /
-        (dataEnd[i] - dataStart[i]) + plotStart[i]
+        Math.round((point[i] - dataStart[i]) *
+            (plotEnd[i] - plotStart[i]) /
+            (dataEnd[i] - dataStart[i]) + plotStart[i])
     );
+
     var markedX = {};
     var markedY = {};
+
     var origin = translate([0, 0]);
     origin = v.min(v.max(origin,
         [plotStart[0], plotEnd[1]]),
         [plotEnd[0], plotStart[1]]);
 
-    var left = origin[0] < canvas.width / 2;
-    var top = origin[1] < canvas.height / 2;
+
 
     for (var setup of setups) {
 
 
-        var datapoints = setup.datapoints;
+        var data = setup.data;
 
 
         ctx.strokeStyle = 'black';
@@ -71,7 +136,7 @@ function Plot(canvas, setups) {
 
         var prev = null;
 
-        for (var i of datapoints) {
+        for (var i of data) {
             if (setup.mark !== false && i[2] !== false) {
                 var p = translate(i);
 
@@ -100,14 +165,14 @@ function Plot(canvas, setups) {
                 ctx.textBaseline = 'middle'
                 ctx.fillStyle = 'black';
                 ctx.textAlign = left ? 'right' : 'left';
-                var my = Math.round(i[1] * 100) / 100;
+                var my = fmt(i[1]);
                 if (!markedY[my])
                     ctx.fillText(my, origin[0] + (left ? - 8 : 8), p[1]);
                 markedY[my] = true;
 
                 ctx.textAlign = 'center';
                 ctx.textBaseline = top ? 'bottom' : 'top';
-                var mx = Math.round(i[0] * 100) / 100;
+                var mx = fmt(i[0]);
                 if (!markedX[mx])
                     ctx.fillText(mx, p[0], origin[1] + (top ? -8 : 8));
                 markedX[mx] = true;
@@ -116,10 +181,10 @@ function Plot(canvas, setups) {
         }
     }
     for (var setup of setups) {
-        var datapoints = setup.datapoints;
+        var data = setup.data;
         setup.color = setup.color || '#2196F3';
         var prev = null;
-        for (var i of datapoints) {
+        for (var i of data) {
             var p = translate(i);
             if (setup.connect !== false) {
                 if (prev) {

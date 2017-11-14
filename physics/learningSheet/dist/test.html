@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+</head>
+<div id="app">
+    <p>
+        <input type="text" v-model.number="x">
+        <katex :expr="' + '+5+' = '+(x+5)"></katex>
+    </p>
+    <plot width="400" height="200" :data="{data:{f:y=>y*x+1, s:0, e:10, d:10}, mark:false}"></plot>
+</div>
+
+<body>
+
+</body>
+<script src="./bundle.js"></script>
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            x: 0
+        }
+    })
+</script>
+
+</html>
