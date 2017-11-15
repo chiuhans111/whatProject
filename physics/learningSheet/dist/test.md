@@ -23,7 +23,7 @@ a1 = (this.f - this.fk*Math.sign(this.f))/this.m
 ## $en: Midterm Exam Explained $ch: 期中考講解
 ---
 ## $en: THE PROBLEM $ch: 題目
-
+`>f`
 ``` svg 350x150
 rect x=10 width=50 height=50 style=fill:none;stroke:black
 text font-size=16 x=10 y=70,{{m}} g
@@ -64,5 +64,6 @@ $ch: 然後停止施力，再讓它滑行 @in:is2 公里。
 @if:us!=0@ $en:because we have static friction __katex:\\mu _s__ = @in:us
 @if:us!=0@ $ch:因為有靜摩擦力 __katex:\\mu _s__ = @in:us
 
+<if></if>
 @if:us!=0@ $en:the box only move if$ch:盒子施力必須達成$  __katex:F>\\mu _sF_n__
 @if:us!=0@ @in:f {{move?'>':'<='}} {{fs}} $en: so it {{move?'':'will not'}} moves.$ch: 因此它{{move?'會':'不會'}}移動。
