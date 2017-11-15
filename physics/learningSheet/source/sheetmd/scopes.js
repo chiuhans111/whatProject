@@ -62,22 +62,29 @@ export default {
                     break;
 
                 default:
-                    var cond = null;
+
                     line = (function (line) {
                         if (line.trim() == '---') return '<hr>';
-                        line = line.replace(/@if:([^]+?)@/, function (g, c) {
-                            cond = c;
+                        line = line.replace(/<if:([^]+?)>/, function (g, c) {
+                            var div = document.createElement('div');
+                            div.setAttribute('v-if', c)
+                            config.element.appendChild(div);
+                            config.element = div;
                             return '';
                         })
-                        line = line.replace(/@in:(\w+)/g, function (g, variable) {
+                        line = line.replace(/<\/if>/, function (g, c) {
+                            config.element = config.element.parentNode;
+                            return '';
+                        })
+                        line = line.replace(/`(\w+)`/g, function (g, variable) {
                             return `<input type="text" v-model.number="${variable}"></input>`;
                         })
                         line = line.replace(/\$(\w+):([^\$]+)(\$\s)?/g, function (g, lang, content) {
                             config.langs[lang] = true;
                             return `<transition name="list"><span v-if="lang=='${lang}'">${content}</span></transition>`;
                         })
-                        line = line.replace(/__katex:([^]+?)__/g, function (g, code) {
-                            code = code.replace(/{{\w+}}/, '"+($&)+"');
+                        line = line.replace(/\*([^]+?)\*/g, function (g, code) {
+                            code = code.replace(/{{(\w+)}}/g, '"+($1)+"');
                             return `<katex :expr='"${code}"'></katex>`
                         })
                         var header = line.match(/^(#+)([^]+)/);
@@ -90,8 +97,9 @@ export default {
 
                     var p = document.createElement('p');
                     p.innerHTML = line;
+
                     config.element.appendChild(p);
-                    if (cond) p.setAttribute('v-if', cond)
+
 
                     break;
 

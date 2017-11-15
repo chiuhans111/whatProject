@@ -44,11 +44,12 @@ function Plot(canvas, setups) {
     for (var setup of setups) {
         if (setup.data.f instanceof Function) {
             var data = [];
-            for (var i = 0; i < setup.data.d; i++) {
-                var x = i / (setup.data.e - setup.data.s) + setup.data.s;
+            for (var i = 0; i <= setup.data.d; i++) {
+                var x = i / setup.data.d * (setup.data.e - setup.data.s) + setup.data.s;
                 data.push([x, setup.data.f(x)]);
             }
             setup.data = data;
+            console.log(data)
         }
 
         for (var i of setup.data) {
@@ -94,10 +95,10 @@ function Plot(canvas, setups) {
     maxtextlen = Math.round(maxtextlen);
     var plotStart = [
         margin + (left > 0 ? maxtextlen : 0),
-        canvas.height - margin - (top < 0 ? 24 : 0)];
+        canvas.height - margin - (top < 0 ? 20 : 0)];
     var plotEnd = [
         canvas.width - margin - (left < 0 ? maxtextlen : 0),
-        margin];
+        margin + 8];
 
     left = left >= 0;
     top = top > 0;
