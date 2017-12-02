@@ -4,6 +4,7 @@ import katex from './source/katex/katex.vue';
 import sheetmd from './source/sheetmd/sheetmd.js';
 import './style/style.css';
 import './dist/test.md';
+
 Vue.component("katex", katex);
 Vue.component("plot", plot);
 

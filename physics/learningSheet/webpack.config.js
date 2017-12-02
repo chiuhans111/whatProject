@@ -1,4 +1,6 @@
+const ClosureCompiler = require('google-closure-compiler-js').webpack;
 const path = require('path');
+var webpack = require('webpack')
 module.exports = {
   entry: path.join(__dirname, 'main'),
   output: {
@@ -10,8 +12,8 @@ module.exports = {
       {
         test: /\.js$/,
         loader: 'babel-loader',
-        exclude: /node_modules/
-      }, {
+      },
+      {
         test: /\.vue$/,
         loader: 'vue-loader'
       },
@@ -27,7 +29,6 @@ module.exports = {
   resolve: {
     extensions: ['.json', '.js', '.jsx', '.css', '.vue']
   },
-  devtool: 'cheap-eval-source-map',
   devServer: {
     publicPath: '/'
   }
