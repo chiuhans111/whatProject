@@ -4,7 +4,7 @@
 </template>
 <script>
     import katex from "./katex.min.js";
-    import "./katex.min.css";
+    
 
     export default {
         props: ["expr"],
