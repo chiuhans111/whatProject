@@ -9,7 +9,7 @@ function hacker(target) {
   function info(text) {
     infospan.textContent = [
       ...arguments
-    ].map(a = > a.toString()).join(' ');
+    ].map(a => a.toString()).join(' ');
     target.console.log(...arguments);
   }
   var me = this;
@@ -122,8 +122,8 @@ function hacker(target) {
     var currentTimeNode = window.document.querySelector('.vjs-current-time-display');
     var durationTimeNode = window.document.querySelector('.vjs-duration-display');
     function getPlayTime() {
-      var current = currentTimeNode.childNodes[1].textContent.trim().split(':').map(x = > + x).reduce((a, b) = > a * 60 + b);
-      var duration = durationTimeNode.childNodes[1].textContent.trim().split(':').map(x = > + x).reduce((a, b) = > a * 60 + b);
+      var current = currentTimeNode.childNodes[1].textContent.trim().split(':').map(x => + x).reduce((a, b) => a * 60 + b);
+      var duration = durationTimeNode.childNodes[1].textContent.trim().split(':').map(x => + x).reduce((a, b) => a * 60 + b);
       return {
         current: current,
         duration: duration,
