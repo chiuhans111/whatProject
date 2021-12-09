@@ -1,0 +1,14 @@
+{
+  "ProjectFilePath": "e:\\Documents\\Github\\whatProject\\RopeCursor\\WindowsFormsApplication2\\WindowsFormsApplication2.csproj",
+  "TargetFramework": "v4.5",
+  "TagHelpers": [],
+  "Configuration": {
+    "ConfigurationName": "UnsupportedRazor",
+    "LanguageVersion": "1.0",
+    "Extensions": [
+      {
+        "ExtensionName": "UnsupportedRazorExtension"
+      }
+    ]
+  }
+}
